@@ -1,11 +1,13 @@
 package house.misc;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import java.io.File;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -49,7 +51,7 @@ public class ExportCadastral27 {
 					.store(RESULT)
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 
 //		Charset charset = Charset.forName("UTF-8");
 //		marmot.writeToShapefile(result, SHP_FILE, "main", charset, false, false).get();

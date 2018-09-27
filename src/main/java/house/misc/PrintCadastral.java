@@ -1,6 +1,7 @@
 package house.misc;
 
 import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -76,7 +77,7 @@ public class PrintCadastral {
 					.store("tmp/diff_buildings")
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet("tmp/diff_buildings", gcInfo, plan, FORCE);
+		marmot.createDataSet("tmp/diff_buildings", plan, GEOMETRY(gcInfo), FORCE);
 		
 		marmot.disconnect();
 	}

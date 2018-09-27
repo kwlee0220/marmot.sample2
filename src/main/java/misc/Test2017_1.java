@@ -1,5 +1,7 @@
 package misc;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -8,7 +10,6 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -65,7 +66,7 @@ public class Test2017_1 {
 								.store(GRID)
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		DataSet result = marmot.createDataSet(GRID, gcInfo, plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(GRID, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

@@ -1,5 +1,7 @@
 package apttrx;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.MAX;
@@ -10,7 +12,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -104,8 +105,8 @@ public class SummarizeByHighSchoolLong {
 						
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, new GeometryColumnInfo("the_geom", srid),
-											plan, DataSetOption.FORCE);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 3);
@@ -120,7 +121,8 @@ public class SummarizeByHighSchoolLong {
 							.filter("학교급구분 == '고등학교'")
 							.store(HIGH_SCHOOLS)
 							.build();
-		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, ds.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
+		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, plan, GEOMETRY(gcInfo), FORCE);
 		return result;
 	}
 }

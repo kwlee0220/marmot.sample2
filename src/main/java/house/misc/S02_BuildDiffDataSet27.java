@@ -1,6 +1,7 @@
 package house.misc;
 
 import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -78,7 +79,7 @@ public class S02_BuildDiffDataSet27 {
 					.store("tmp/diff_cadastral")
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet("tmp/diff_cadastral", gcInfo, plan, FORCE);
+		DataSet result = marmot.createDataSet("tmp/diff_cadastral", plan, GEOMETRY(gcInfo), FORCE);
 		marmot.deleteDataSet(DIFF_ID_LIST);
 
 		Charset charset = Charset.forName("UTF-8");

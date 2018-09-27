@@ -1,9 +1,12 @@
 package house.misc;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
-import marmot.DataSetOption;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -43,6 +46,7 @@ public class S03_ExportRegisteredBuildings27 {
 					.project("the_geom,bd_mgt_sn")
 					.store(REG_BUILDINGS + "_27")
 					.build();
-		DataSet ds = marmot.createDataSet(REG_BUILDINGS + "_27", input.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
+		DataSet ds = marmot.createDataSet(REG_BUILDINGS + "_27", plan, GEOMETRY(gcInfo), FORCE);
 	}
 }

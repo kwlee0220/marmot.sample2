@@ -1,5 +1,7 @@
 package apttrx;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
 
@@ -7,7 +9,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
+import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSchema;
@@ -62,11 +64,12 @@ public class SummarizeByHighSchoolShort {
 		
 		RecordSchema schema;
 		String geomCol = school.getGeometryColumn();
+		GeometryColumnInfo gcInfo = school.getGeometryColumnInfo();
 
 		Plan plan1 = countTradeTransaction(marmot);
 		Plan plan2 = countLeaseTransaction(marmot);
 
-		marmot.createDataSet(TEMP, school.getGeometryColumnInfo(), plan1, DataSetOption.FORCE);
+		marmot.createDataSet(TEMP, plan1, GEOMETRY(gcInfo), FORCE);
 		marmot.execute(plan2);
 		System.out.println("done: 아파트 거래 정보 지오코딩, elapsed=" + watch.getElapsedMillisString());
 		
@@ -81,7 +84,7 @@ public class SummarizeByHighSchoolShort {
 						.sort("count:D")
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, school.getGeometryColumnInfo(), plan1, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan1, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
 		
 		marmot.deleteDataSet(TEMP);
@@ -162,8 +165,8 @@ public class SummarizeByHighSchoolShort {
 							.filter("type == '고등학교'")
 							.store(HIGH_SCHOOLS)
 							.build();
-		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, ds.getGeometryColumnInfo(),
-												plan, DataSetOption.FORCE);
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
+		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, plan, GEOMETRY(gcInfo), FORCE);
 		
 		return result;
 	}

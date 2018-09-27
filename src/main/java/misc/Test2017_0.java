@@ -1,5 +1,8 @@
 package misc;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,7 +11,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -73,7 +75,7 @@ public class Test2017_0 {
 								.store(ADDR_BLD_UTILS)
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		DataSet result = marmot.createDataSet(ADDR_BLD_UTILS, gcInfo, plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(ADDR_BLD_UTILS, plan, GEOMETRY(gcInfo), FORCE);
 		result.cluster();
 		watch.stop();
 		

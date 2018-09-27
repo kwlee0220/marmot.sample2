@@ -1,5 +1,8 @@
 package yunsei;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +18,6 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -85,7 +87,7 @@ public class Y2T_1_2 {
 					.intersects(geomCol, seoul)
 					.store(TEMP_BUS_SEOUL)
 					.build();
-		result = marmot.createDataSet(TEMP_BUS_SEOUL, gcInfo, plan, DataSetOption.FORCE);
+		result = marmot.createDataSet(TEMP_BUS_SEOUL, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
 		
 		DataSet buffereds = null;
@@ -105,7 +107,7 @@ public class Y2T_1_2 {
 						.store(MULTI_RINGS)
 						.build();
 			if ( buffereds == null ) {
-				buffereds = marmot.createDataSet(MULTI_RINGS, gcInfo, plan, DataSetOption.FORCE);
+				buffereds = marmot.createDataSet(MULTI_RINGS, plan, GEOMETRY(gcInfo), FORCE);
 			}
 			else {
 				marmot.execute(plan);
@@ -143,7 +145,7 @@ public class Y2T_1_2 {
 					.expand("ratio:double", expr)
 					.store(TEMP_JOINED)
 					.build();
-		marmot.createDataSet(TEMP_JOINED, gcInfo, plan, DataSetOption.FORCE);
+		marmot.createDataSet(TEMP_JOINED, plan, GEOMETRY(gcInfo), FORCE);
 		
 		plan = marmot.planBuilder("analysis")
 					.load(TEMP_JOINED)
@@ -153,7 +155,7 @@ public class Y2T_1_2 {
 					.project("param_geom as the_geom, *-{param_geom}")
 					.store(RESULT)
 					.build();
-		marmot.createDataSet(RESULT, gcInfo, plan, DataSetOption.FORCE);
+		marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		
 //		ClusterWithKMeansParameters params = new ClusterWithKMeansParameters();
 //		params.dataset(INPUT);

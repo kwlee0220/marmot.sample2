@@ -1,5 +1,7 @@
 package yunsei;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.commons.io.FilenameUtils;
@@ -10,7 +12,6 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.DataSetType;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
@@ -108,7 +109,7 @@ public class Y2S_1 {
 								SUM("index_15").as("index_15"))
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, gcInfo, plan, DataSetOption.FORCE);
+		result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
 		
 		marmot.deleteDataSet(RESULT_CONCAT);
@@ -142,7 +143,8 @@ public class Y2S_1 {
 						.project("the_geom,block_cd,avg_08tmst,avg_15tmst")
 						.store(output)
 						.build();
-		DataSet result = marmot.createDataSet(output, flowPop.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
+		GeometryColumnInfo gcInfo = flowPop.getGeometryColumnInfo();
+		DataSet result = marmot.createDataSet(output, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

@@ -1,9 +1,12 @@
 package house;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
-import marmot.DataSetOption;
+import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -55,7 +58,8 @@ public class S01_FindHouseArea {
 						.filter("lclas_cl == 'UQA100'")
 						.store(result)
 						.build();
-		DataSet resDs = marmot.createDataSet(landUsage, ds.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
+		DataSet resDs = marmot.createDataSet(landUsage, plan, GEOMETRY(gcInfo), FORCE);
 		resDs.cluster();
 		System.out.printf("용도지역지구에서 주거지역 추출 완료, count=%d, elapsed=%s%n",
 							resDs.getRecordCount(), elapsed.getElapsedMillisString());

@@ -1,9 +1,12 @@
 package service_area;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
-import marmot.DataSetOption;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -50,7 +53,8 @@ public class FixNetworkDataSet {
 					.update(updEXpr)
 					.store(OUTPUT)
 					.build();
-		DataSet ds = marmot.createDataSet(OUTPUT, input.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
+		DataSet ds = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
 		ds.cluster();
 
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());

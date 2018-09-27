@@ -1,5 +1,7 @@
 package oldbldr;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.SUM;
 
 import java.util.stream.Collectors;
@@ -9,7 +11,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.optor.JoinOptions;
@@ -75,7 +77,8 @@ public class Step1CardSales {
 					.project(String.format("%s,*-{%s}", geomCol, geomCol))
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

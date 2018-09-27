@@ -1,9 +1,12 @@
 package house.misc;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
-import marmot.DataSetOption;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -42,7 +45,7 @@ public class S02_ExportHouseCadastral27 {
 					.filter("pnu.startsWith('27')")
 					.store(HOUSE_CADASTRAL + "_27")
 					.build();
-		DataSet ds = marmot.createDataSet(HOUSE_CADASTRAL + "_27", input.getGeometryColumnInfo(),
-											plan, DataSetOption.FORCE);
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
+		DataSet ds = marmot.createDataSet(HOUSE_CADASTRAL + "_27", plan, GEOMETRY(gcInfo), FORCE);
 	}
 }
