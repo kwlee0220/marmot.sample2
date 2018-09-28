@@ -4,7 +4,6 @@ import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -16,6 +15,8 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSet;
 import marmot.command.MarmotCommands;
+import marmot.externio.shp.ExportRecordSetAsShapefile;
+import marmot.externio.shp.ShapefileParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -76,22 +77,27 @@ public class FindBestRoadsForPickup {
 		SampleUtils.printPrefix(result, 10);
 	}
 	
-	private static void exportResult(PBMarmotClient marmot, String resultLayerName,
-									String baseDirPath) throws IOException {
-		export(marmot, resultLayerName, 8, baseDirPath);
-		export(marmot, resultLayerName, 22, baseDirPath);
+	private static void exportResult(PBMarmotClient marmot, String dsId,
+									String baseDirPath) throws IOException, InterruptedException {
+		export(marmot, dsId, 8, baseDirPath);
+		export(marmot, dsId, 22, baseDirPath);
 	}
 	
-	private static void export(PBMarmotClient marmot, String resultLayerName, int hour,
-								String baseName) throws IOException {
+	private static void export(PBMarmotClient marmot, String dsId, int hour,
+								String baseName) throws IOException, InterruptedException {
 		Plan plan = marmot.planBuilder("export")
-								.load(resultLayerName)
+								.load(dsId)
 								.filter("hour == " + hour)
 								.build();
 		RecordSet rset = marmot.executeLocally(plan);
 
-		String file = String.format("/home/kwlee/tmp/%s_%02d.shp", baseName, hour);
-		marmot.writeToShapefile(rset, new File(file), "best_roads", SRID,
-								Charset.forName("euc-kr"), -1, false, false);
+		String file = String.format("/home/kwlee/tmp/%s_%02d", baseName, hour);
+		ShapefileParameters params = ShapefileParameters.create()
+														.typeName("best_roads")
+														.shpSrid(SRID)
+														.charset(Charset.forName("euc-kr"));
+		ExportRecordSetAsShapefile export = new ExportRecordSetAsShapefile(rset, SRID,
+																			file, params);
+		export.start().waitForDone();
 	}
 }
