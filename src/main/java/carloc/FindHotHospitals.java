@@ -6,6 +6,8 @@ import static marmot.plan.SpatialJoinOption.WITHIN_DISTANCE;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
+import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -54,13 +56,11 @@ public class FindHotHospitals {
 									.tagWith("the_geom,bplc_nm")
 									.aggregate(COUNT())
 								.rank("count:D", "rank")
-								.storeMarmotFile(RESULT)
+								.store(RESULT)
 								.build();
-
-		marmot.deleteFile(RESULT);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 50);
+		SampleUtils.printPrefix(result, 50);
 	}
 }

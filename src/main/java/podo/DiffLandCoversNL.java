@@ -5,6 +5,7 @@ import static marmot.optor.AggregateFunction.SUM;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import static marmot.DataSetOption.*;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.plan.LoadOption;
@@ -55,10 +56,9 @@ public class DiffLandCoversNL {
 						.groupBy("t1987,t2007")
 							.workerCount(1)
 							.aggregate(SUM("area").as("total_area"))
-						.storeAsCsv(RESULT, ',')
+						.store(RESULT)
 						.build();
-		marmot.deleteFile(RESULT);
-		marmot.execute(plan);
+		marmot.createDataSet(RESULT, plan, FORCE);
 		
 		watch.stop();
 		System.out.println("완료: 토지피복도 교차조인");

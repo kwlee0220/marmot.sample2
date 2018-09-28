@@ -1,5 +1,6 @@
 package podo;
 
+import static marmot.DataSetOption.FORCE;
 import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
@@ -58,10 +59,9 @@ public class DiffLandCoversIdx {
 							.workerCount(1)
 							.aggregate(SUM("area").as("total_area"))
 						.expand("total_area:long", "total_area = Math.round(total_area)")
-						.storeAsCsv(RESULT, ',')
+						.store(RESULT)
 						.build();
-		marmot.deleteFile(RESULT);
-		marmot.execute(plan);
+		marmot.createDataSet(RESULT, plan, FORCE);
 		
 		watch.stop();
 		System.out.println("완료: 토지피복도 교차조인");

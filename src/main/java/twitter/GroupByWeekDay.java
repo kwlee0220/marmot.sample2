@@ -1,5 +1,7 @@
 package twitter;
 
+import static marmot.DataSetOption.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Plan;
@@ -37,17 +39,15 @@ public class GroupByWeekDay {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
-		marmot.deleteFile(RESULT);
-
 		Plan plan = marmot.planBuilder("group_by_weekday_and_count")
 								.load(TWEETS)
 								.project("id,created_at")
 								.expand("week_day:int", "week_day = ST_DTWeekDay(created_at)")
 								.groupBy("week_day").count()
 								.drop(0)
-								.storeAsCsv(RESULT, ',')
+								.store(RESULT)
 								.build();
-		marmot.execute(plan);
+		marmot.createDataSet(RESULT, plan, FORCE);
 		
 		watch.stop();
 		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());

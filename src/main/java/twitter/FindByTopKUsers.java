@@ -4,7 +4,6 @@ import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -12,8 +11,8 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
-import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.RecordSet;
 import marmot.command.MarmotCommands;
 import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -73,27 +72,15 @@ public class FindByTopKUsers {
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 
-	public static List<String> findTopKUsers(MarmotRuntime marmot) throws Exception {
+	public static List<String> findTopKUsers(PBMarmotClient marmot) throws Exception {
 		// 가장 자주 tweet을 한 사용자 식별자들을 저장할 임시 파일 이름을 생성한다.
-		String tempFile = "tmp/" + UUID.randomUUID().toString();
-
 		Plan plan = marmot.planBuilder("list_topk_users")
 								.load(TWEETS)
 								.groupBy("user_id").aggregate(AggregateFunction.COUNT())
 								.pickTopK("count:D", 5)
-								.storeMarmotFile(tempFile)
 								.build();
-		marmot.execute(plan);
-		SampleUtils.printMarmotFilePrefix(marmot, tempFile, 10);
-		
-		try {
-			return marmot.readMarmotFile(tempFile)
-						.stream()
-						.map(rec -> rec.getString("user_id"))
-						.collect(Collectors.toList());
-		}
-		finally {
-			marmot.deleteFile(tempFile);
+		try ( RecordSet rset = marmot.executeWithTemporaryDataSet(plan) ) {
+			return rset.fstream().map(r -> r.getString("user_id")).toList();
 		}
 	}
 }
