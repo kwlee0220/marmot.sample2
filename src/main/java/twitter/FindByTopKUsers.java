@@ -79,7 +79,7 @@ public class FindByTopKUsers {
 								.groupBy("user_id").aggregate(AggregateFunction.COUNT())
 								.pickTopK("count:D", 5)
 								.build();
-		try ( RecordSet rset = marmot.executeWithTemporaryDataSet(plan) ) {
+		try ( RecordSet rset = marmot.executeToRecordSet(plan) ) {
 			return rset.fstream().map(r -> r.getString("user_id")).toList();
 		}
 	}
