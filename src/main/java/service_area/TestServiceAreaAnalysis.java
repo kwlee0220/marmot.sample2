@@ -2,7 +2,7 @@ package service_area;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.command.MarmotCommands;
+import marmot.command.MarmotClient;
 import marmot.process.geo.ServiceAreaAnaysisParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -30,8 +30,8 @@ public class TestServiceAreaAnalysis {
 			cl.exitWithUsage(0);
 		}
 
-		String host = MarmotCommands.getMarmotHost(cl);
-		int port = MarmotCommands.getMarmotPort(cl);
+		String host = MarmotClient.getMarmotHost(cl);
+		int port = MarmotClient.getMarmotPort(cl);
 		
 		StopWatch total = StopWatch.start();
 		

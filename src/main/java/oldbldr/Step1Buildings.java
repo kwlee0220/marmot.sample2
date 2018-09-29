@@ -11,7 +11,7 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.command.MarmotCommands;
+import marmot.command.MarmotClient;
 import marmot.plan.RecordScript;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -39,8 +39,8 @@ public class Step1Buildings {
 			cl.exitWithUsage(0);
 		}
 
-		String host = MarmotCommands.getMarmotHost(cl);
-		int port = MarmotCommands.getMarmotPort(cl);
+		String host = MarmotClient.getMarmotHost(cl);
+		int port = MarmotClient.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		

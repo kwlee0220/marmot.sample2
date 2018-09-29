@@ -14,7 +14,7 @@ import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSet;
-import marmot.command.MarmotCommands;
+import marmot.command.MarmotClient;
 import marmot.plan.GeomOpOption;
 import marmot.process.geo.EstimateClusterQuadKeysParameters;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -43,8 +43,8 @@ public class S1_MapMatchingTaxiLog2 {
 			cl.exitWithUsage(0);
 		}
 
-		String host = MarmotCommands.getMarmotHost(cl);
-		int port = MarmotCommands.getMarmotPort(cl);
+		String host = MarmotClient.getMarmotHost(cl);
+		int port = MarmotClient.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		
