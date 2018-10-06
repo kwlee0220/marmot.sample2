@@ -1,11 +1,10 @@
-package carloc.map;
+package navi_call;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import carloc.Globals;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
@@ -20,14 +19,15 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S1_MapMatchingTaxiLog3 {
-	private static final String INPUT = Globals.TAXI_LOG;
-	private static final String RESULT = Globals.TAXI_LOG_MAP;
+public class FindLongTaxiTravels {
+	private static final String TAXI_TRJ = "로그/나비콜/택시경로";
+	private static final String RESULT = "tmp/result";
+	private static final String SRID = "EPSG:5186";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("map_matching_taxi_log ");
+		CommandLineParser parser = new CommandLineParser("mc_list_records ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -43,25 +43,19 @@ public class S1_MapMatchingTaxiLog3 {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-		
-		DataSet input = marmot.getDataSet(INPUT);
-		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		String geomCol = gcInfo.name();
-		
-		String script = String.format("%s = ST_ClosestPointOnLine(%s, line)", geomCol, geomCol);
-		
-		Plan plan;
-		plan = marmot.planBuilder("택시로그_맵_매핑")
-					.load(INPUT)
-					.knnJoin(geomCol, Globals.ROADS_IDX, 1, Globals.DISTANCE,
-							"*,param.{the_geom as link_geom, link_id, sub_link_no}")
-//					.update(script)
-					.store(RESULT)
-					.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
-		watch.stop();
 
-		SampleUtils.printPrefix(result, 10);
-		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
+		Plan plan = marmot.planBuilder("find_long_travels")
+								.load(TAXI_TRJ)
+								.filter("status == 3")
+								.expand1("length:double", "ST_TRLength(trajectory)")
+								.pickTopK("length:D", 10)
+								.expand("the_geom:line_string", "the_geom = ST_TRLineString(trajectory)")
+								.project("*-{trajectory}")
+								.store(RESULT)
+								.build();
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		
+		SampleUtils.printPrefix(result, 5);
 	}
 }

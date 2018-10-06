@@ -1,35 +1,26 @@
-package carloc;
+package navi_call;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Polygon;
-
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.GeometryColumnInfo;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotClient;
-import marmot.geo.GeoClientUtils;
-import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.Size2d;
-import utils.Size2i;
 import utils.StopWatch;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class CalcHeatMap {
+public class FindHotTaxiPlaces {
 	private static final String TAXI_LOG = "로그/나비콜/택시로그";
-	private static final String SEOUL = "시연/서울특별시";
+	private static final String EMD = "시연/서울_읍면동";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -52,25 +43,24 @@ public class CalcHeatMap {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet border = marmot.getDataSet(SEOUL);
-		String srid = border.getGeometryColumnInfo().srid();
-		Envelope envl = border.getBounds();
-		Polygon key = GeoClientUtils.toPolygon(envl);
-
-		Size2i resol = new Size2i(50, 50);
-		Size2d cellSize = GeoClientUtils.divide(envl, resol);
-		
-		Plan plan = marmot.planBuilder("calc_heat_map")
-							.loadSquareGridFile(new SquareGrid(envl, cellSize), 32)
-							.spatialJoin("the_geom", TAXI_LOG, "*")
-							.groupBy("cell_id")
-								.tagWith("the_geom")
+		Plan plan = marmot.planBuilder("find_hot_taxi_places")
+							.load(TAXI_LOG)
+							.filter("status==1 || status==2")
+							.spatialJoin("the_geom", EMD,
+										"car_no,status,ts,param.{the_geom, EMD_CD,EMD_KOR_NM}")
+							.expand1("hour:int", "ts.substring(8,10)")
+							.groupBy("hour,status,EMD_CD")
+								.tagWith("EMD_KOR_NM,the_geom")
 								.aggregate(COUNT())
+							.filter("count > 50")
+							.groupBy("hour,status")
+								.orderBy("count:D")
+								.list()
 							.store(RESULT)
 							.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
+		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printPrefix(result, 5);
+		SampleUtils.printPrefix(result, 50);
 	}
 }

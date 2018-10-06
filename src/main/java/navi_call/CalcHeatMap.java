@@ -1,28 +1,36 @@
-package carloc.map;
+package navi_call;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
+import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import carloc.Globals;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Polygon;
+
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClient;
+import marmot.geo.GeoClientUtils;
+import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
+import utils.Size2d;
+import utils.Size2i;
 import utils.StopWatch;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S3_FindMatchingTaxiLog {
-	private static final String INPUT = Globals.TAXI_LOG_DONG;
-	private static final String RESULT = "tmp/matching_taxi_log";
+public class CalcHeatMap {
+	private static final String TAXI_LOG = "로그/나비콜/택시로그";
+	private static final String SEOUL = "시연/서울특별시";
+	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -44,20 +52,25 @@ public class S3_FindMatchingTaxiLog {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet input = marmot.getDataSet(INPUT);
-		String geomCol = input.getGeometryColumn();
-		
-		Plan plan;
-		plan = marmot.planBuilder("맵_매핑_택시로그_검색")
-					.load(INPUT)
-					.knnJoin(geomCol, Globals.ROADS, 1, Globals.DISTANCE, "*")
-					.store(RESULT)
-					.build();
-		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
-		watch.stop();
+		DataSet border = marmot.getDataSet(SEOUL);
+		String srid = border.getGeometryColumnInfo().srid();
+		Envelope envl = border.getBounds();
+		Polygon key = GeoClientUtils.toPolygon(envl);
 
+		Size2i resol = new Size2i(50, 50);
+		Size2d cellSize = GeoClientUtils.divide(envl, resol);
+		
+		Plan plan = marmot.planBuilder("calc_heat_map")
+							.loadSquareGridFile(new SquareGrid(envl, cellSize), 32)
+							.spatialJoin("the_geom", TAXI_LOG, "*")
+							.groupBy("cell_id")
+								.tagWith("the_geom")
+								.aggregate(COUNT())
+							.store(RESULT)
+							.build();
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		
 		SampleUtils.printPrefix(result, 5);
-		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

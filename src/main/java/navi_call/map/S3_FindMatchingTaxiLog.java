@@ -1,17 +1,17 @@
-package carloc.map;
+package navi_call.map;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import carloc.Globals;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClient;
 import marmot.remote.protobuf.PBMarmotClient;
+import navi_call.Globals;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -20,15 +20,14 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S1_MapMatchingTaxiLog {
-	private static final String INPUT = Globals.TAXI_LOG;
-	private static final String PARAM = Globals.ROADS;
-	private static final String RESULT = Globals.TAXI_LOG_MAP;
+public class S3_FindMatchingTaxiLog {
+	private static final String INPUT = Globals.TAXI_LOG_DONG;
+	private static final String RESULT = "tmp/matching_taxi_log";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("map_matching_taxi_log ");
+		CommandLineParser parser = new CommandLineParser("mc_list_records ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -39,30 +38,26 @@ public class S1_MapMatchingTaxiLog {
 
 		String host = MarmotClient.getMarmotHost(cl);
 		int port = MarmotClient.getMarmotPort(cl);
-	
+		
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet input = marmot.getDataSet(INPUT);
-		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		String geomCol = gcInfo.name();
-		
-		String script = String.format("%s = ST_ClosestPointOnLine(%s, line)", geomCol, geomCol);
+		String geomCol = input.getGeometryColumn();
 		
 		Plan plan;
-		plan = marmot.planBuilder("택시로그_맵_매핑_org_road")
+		plan = marmot.planBuilder("맵_매핑_택시로그_검색")
 					.load(INPUT)
-					.knnJoin(geomCol, PARAM, 1, Globals.DISTANCE,
-							"*,param.{the_geom as link_geom, link_id}")
-//					.update(script)
+					.knnJoin(geomCol, Globals.ROADS, 1, Globals.DISTANCE, "*")
 					.store(RESULT)
 					.build();
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
 
-		SampleUtils.printPrefix(result, 10);
+		SampleUtils.printPrefix(result, 5);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

@@ -1,6 +1,7 @@
-package carloc;
+package navi_call;
 
 import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.plan.SpatialJoinOption.WITHIN_DISTANCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -18,9 +19,9 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class FindHotTaxiPlaces {
+public class FindHotHospitals {
 	private static final String TAXI_LOG = "로그/나비콜/택시로그";
-	private static final String EMD = "시연/서울_읍면동";
+	private static final String HOSPITAL = "시연/hospitals";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -38,26 +39,25 @@ public class FindHotTaxiPlaces {
 		String host = MarmotClient.getMarmotHost(cl);
 		int port = MarmotClient.getMarmotPort(cl);
 		
-		StopWatch watch = StopWatch.start();
+		StopWatch watch;
+		watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		Plan plan = marmot.planBuilder("find_hot_taxi_places")
-							.load(TAXI_LOG)
-							.filter("status==1 || status==2")
-							.spatialJoin("the_geom", EMD,
-										"car_no,status,ts,param.{the_geom, EMD_CD,EMD_KOR_NM}")
-							.expand1("hour:int", "ts.substring(8,10)")
-							.groupBy("hour,status,EMD_CD")
-								.tagWith("EMD_KOR_NM,the_geom")
-								.aggregate(COUNT())
-							.filter("count > 50")
-							.groupBy("hour,status")
-								.orderBy("count:D")
-								.list()
-							.store(RESULT)
-							.build();
+		Plan plan = marmot.planBuilder("find_hot_hospitals")
+								.load(TAXI_LOG)
+								.filter("status==1 || status==2")
+								.spatialJoin("the_geom", HOSPITAL,
+											"param.{the_geom,gid,bplc_nm,bz_stt_nm}",
+											WITHIN_DISTANCE(50))
+								.filter("bz_stt_nm=='운영중'")
+								.groupBy("gid")
+									.tagWith("the_geom,bplc_nm")
+									.aggregate(COUNT())
+								.rank("count:D", "rank")
+								.store(RESULT)
+								.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		

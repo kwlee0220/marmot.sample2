@@ -1,4 +1,4 @@
-package carloc.map;
+package navi_call.map;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import carloc.Globals;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.DataSetOption;
@@ -18,6 +17,7 @@ import marmot.command.MarmotClient;
 import marmot.plan.GeomOpOption;
 import marmot.process.geo.EstimateClusterQuadKeysParameters;
 import marmot.remote.protobuf.PBMarmotClient;
+import navi_call.Globals;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
