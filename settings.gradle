@@ -1,6 +1,6 @@
 rootProject.name = 'marmot.sample2'
 
-['utils', 'marmot.client', 'marmot.sample'].each {
+['utils', 'marmot.common', 'marmot.client', 'marmot.sample'].each {
 	include ":$it"
 	project(":$it").projectDir = file("../$it")
 }
