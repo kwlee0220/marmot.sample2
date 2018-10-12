@@ -16,7 +16,7 @@ import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.rset.RecordSets;
 import marmot.support.DefaultRecord;
@@ -48,8 +48,8 @@ public class PrintCadastral {
 			cl.exitWithUsage(0);
 		}
 
-		String host = MarmotClient.getMarmotHost(cl);
-		int port = MarmotClient.getMarmotPort(cl);
+		String host = MarmotClientCommands.getMarmotHost(cl);
+		int port = MarmotClientCommands.getMarmotPort(cl);
 		
 		StopWatch total = StopWatch.start();
 		StopWatch step;

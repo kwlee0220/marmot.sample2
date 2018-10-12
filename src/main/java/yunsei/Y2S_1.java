@@ -16,7 +16,7 @@ import marmot.DataSetType;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.SpatialRelation;
 import marmot.process.geo.DistanceDecayFunctions;
 import marmot.process.geo.E2SFCAParameters;
@@ -57,8 +57,8 @@ public class Y2S_1 {
 			cl.exitWithUsage(0);
 		}
 
-		String host = MarmotClient.getMarmotHost(cl);
-		int port = MarmotClient.getMarmotPort(cl);
+		String host = MarmotClientCommands.getMarmotHost(cl);
+		int port = MarmotClientCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		

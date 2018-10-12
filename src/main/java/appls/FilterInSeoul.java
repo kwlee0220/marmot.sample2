@@ -15,7 +15,7 @@ import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -45,8 +45,8 @@ public class FilterInSeoul {
 			cl.exitWithUsage(0);
 		}
 
-		String host = MarmotClient.getMarmotHost(cl);
-		int port = MarmotClient.getMarmotPort(cl);
+		String host = MarmotClientCommands.getMarmotHost(cl);
+		int port = MarmotClientCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		

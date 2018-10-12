@@ -9,7 +9,7 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import navi_call.Globals;
 import utils.CommandLine;
@@ -36,8 +36,8 @@ public class S1_MapMatchingTaxiLog3 {
 			cl.exitWithUsage(0);
 		}
 
-		String host = MarmotClient.getMarmotHost(cl);
-		int port = MarmotClient.getMarmotPort(cl);
+		String host = MarmotClientCommands.getMarmotHost(cl);
+		int port = MarmotClientCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		
