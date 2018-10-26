@@ -2,7 +2,7 @@ package podo;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
-import static marmot.optor.AggregateFunction.UNION;
+import static marmot.optor.AggregateFunction.GEOM_UNION;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.io.File;
@@ -86,7 +86,7 @@ public class Process {
 						.groupBy("uid1987,uid2007")
 							.tagWith("c1987,c2007")
 							.workerCount(1)
-							.aggregate(UNION("the_geom").as("the_geom"))
+							.aggregate(GEOM_UNION("the_geom").as("the_geom"))
 						.project("the_geom,c1987,c2007")
 						.store(RESULT)
 						.build();
