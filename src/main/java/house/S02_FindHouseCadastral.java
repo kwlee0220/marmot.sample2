@@ -102,7 +102,7 @@ public class S02_FindHouseCadastral {
 		String projectColsExpr = String.format("*-{%s}", tempCol);
 
 		Plan plan = marmot.planBuilder("전국 지적도에서 주거지적 추출")
-						.loadSpatialIndexJoin(cadastral, houseAreaId, INTERSECTS, joinOutColsExpr)
+						.loadSpatialIndexJoin(cadastral, houseAreaId, joinOutColsExpr, INTERSECTS)
 						.shard(45)
 						.intersection("the_geom", tempCol, "the_geom")
 						.dropEmptyGeometry("the_geom")

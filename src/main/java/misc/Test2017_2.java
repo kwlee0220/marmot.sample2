@@ -60,7 +60,7 @@ public class Test2017_2 {
 								.buffer("the_geom", 100, GeomOpOption.OUTPUT("buffer"))
 								.assignSquareGridCell("buffer", new SquareGrid(bounds, cellSize))
 								.centroid("cell_geom")
-								.intersects("cell_geom", "the_geom")
+								.intersectsBinary("cell_geom", "the_geom")
 								.groupBy("cell_id")
 									.tagWith("cell_geom")
 									.aggregate(AggregateFunction.COUNT())

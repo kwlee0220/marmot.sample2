@@ -81,7 +81,7 @@ public class Process {
 		String colExpr = "left.{the_geom, cover as c1987, uid as uid1987},"
 						+ "right.{the_geom as g2,cover as c2007, uid as uid2007";
 		Plan plan = marmot.planBuilder("토지피복_변화량")
-						.loadSpatialIndexJoin(OUTPUT_1987_S, OUTPUT_2007_S, INTERSECTS, colExpr)
+						.loadSpatialIndexJoin(OUTPUT_1987_S, OUTPUT_2007_S, colExpr, INTERSECTS)
 						.intersection("the_geom", "g2", "the_geom")
 						.groupBy("uid1987,uid2007")
 							.tagWith("c1987,c2007")

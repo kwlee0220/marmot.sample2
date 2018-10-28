@@ -47,10 +47,10 @@ public class DiffLandCoversIdx {
 		String geomCol = cover1987.getGeometryColumn();
 
 		Plan plan = marmot.planBuilder("토지피복_변화량")
-						.loadSpatialIndexJoin(LAND_COVER_1987, LAND_COVER_2007, INTERSECTS,
-												"left.{the_geom,분류구 as t1987},"
-												+ "right.{the_geom as the_geom2,분류구 as t2007,"
-												+ "재분류 as t2007_2}")
+						.loadSpatialIndexJoin(LAND_COVER_1987, LAND_COVER_2007, "left.{the_geom,분류구 as t1987},"
+						+ "right.{the_geom as the_geom2,분류구 as t2007,"
+						+ "재분류 as t2007_2}",
+												INTERSECTS)
 						.intersection("the_geom", "the_geom2", "the_geom")
 						.expand("area:double", "area = ST_Area(the_geom);"
 								+ "t2007 = (t2007.length() > 0) ? t2007 : t2007_2")

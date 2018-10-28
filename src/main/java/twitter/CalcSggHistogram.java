@@ -47,8 +47,8 @@ public class CalcSggHistogram {
 		
 		Plan plan = marmot.planBuilder("calc_emd_histogram")
 								.loadSpatialIndexJoin(LEFT_DATASET, RIGHT_DATASET,
-											SpatialRelation.INTERSECTS,
-											"left.{id},right.{the_geom,SIG_CD,SIG_KOR_NM}")
+											"left.{id},right.{the_geom,SIG_CD,SIG_KOR_NM}",
+											SpatialRelation.INTERSECTS)
 								.groupBy("SIG_CD")
 									.tagWith("the_geom,SIG_KOR_NM")
 									.count()
