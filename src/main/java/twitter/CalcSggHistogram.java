@@ -10,7 +10,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -47,8 +46,7 @@ public class CalcSggHistogram {
 		
 		Plan plan = marmot.planBuilder("calc_emd_histogram")
 								.loadSpatialIndexJoin(LEFT_DATASET, RIGHT_DATASET,
-											"left.{id},right.{the_geom,SIG_CD,SIG_KOR_NM}",
-											SpatialRelation.INTERSECTS)
+											"left.{id},right.{the_geom,SIG_CD,SIG_KOR_NM}")
 								.groupBy("SIG_CD")
 									.tagWith("the_geom,SIG_KOR_NM")
 									.count()

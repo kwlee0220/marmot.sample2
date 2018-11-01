@@ -2,7 +2,6 @@ package house;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -102,7 +101,7 @@ public class S02_FindHouseCadastral {
 		String projectColsExpr = String.format("*-{%s}", tempCol);
 
 		Plan plan = marmot.planBuilder("전국 지적도에서 주거지적 추출")
-						.loadSpatialIndexJoin(cadastral, houseAreaId, joinOutColsExpr, INTERSECTS)
+						.loadSpatialIndexJoin(cadastral, houseAreaId, joinOutColsExpr)
 						.shard(45)
 						.intersection("the_geom", tempCol, "the_geom")
 						.dropEmptyGeometry("the_geom")
