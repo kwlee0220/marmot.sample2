@@ -69,7 +69,7 @@ public class Test {
 								"the_geom,pnu,param.the_geom as the_geom2, param.hcode")
 					.expand1("the_geom:point",
 							"ST_Centroid(the_geom.intersection(the_geom2))")
-					.transformCrs("the_geom", "EPSG:5186", "EPSG:4326", "the_geom")
+					.transformCrs("the_geom", "EPSG:5186", "EPSG:4326")
 					.store("tmp/result")
 					.build();
 		result = marmot.createDataSet("tmp/result", plan, GEOMETRY(gcInfo2), FORCE);

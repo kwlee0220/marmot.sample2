@@ -50,7 +50,7 @@ public class ImportTweets {
 							.load(RAW_DIR)
 							// 'coordinates'의 위경도 좌표계를 EPSG:5186으로 변경한 값을
 							// 'the_geom' 컬럼에 저장시킨다.
-							.transformCrs("the_geom", "EPSG:4326", SRID, "the_geom")
+							.transformCrs("the_geom", "EPSG:4326", SRID)
 							// 중복된 id의 tweet를 제거시킨다.
 							.distinct("id")
 							// 'OUTPUT_LAYER'에 해당하는 레이어로 저장시킨다.
