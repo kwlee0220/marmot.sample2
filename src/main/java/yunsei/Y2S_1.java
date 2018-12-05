@@ -1,29 +1,24 @@
 package yunsei;
 
+import static marmot.DataSetOption.APPEND;
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.SUM;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetType;
 import marmot.GeometryColumnInfo;
-import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.geo.SpatialRelation;
-import marmot.process.geo.DistanceDecayFunctions;
+import marmot.optor.geo.advanced.Power;
+import marmot.optor.geo.advanced.WeightFunction;
 import marmot.process.geo.E2SFCAParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.DimensionDouble;
 import utils.StopWatch;
 
 /**
@@ -33,22 +28,17 @@ import utils.StopWatch;
 public class Y2S_1 {
 	private static final String BUS_SUPPLY = "연세대/강남구_버스";
 	private static final String SUBWAY_SUPPLY = "연세대/강남구_지하철";
-	private static final String FLOW_POP = "주민/유동인구/시간대/2015";
-	private static final String SGG = "구역/시군구";
-	private static final String TEMP_FLOW_POP_GANGNAM = "tmp/flow_pop_gangnam";
+	private static final String FLOW_POP = "주민/유동인구/강남구/시간대/2015";
 	private static final String RESULT_BUS = "tmp/E2SFCA/bus";
 	private static final String RESULT_SUBWAY = "tmp/E2SFCA/subway";
-	private static final String RESULT_CONCAT = "tmp/concat";
+	private static final String RESULT_CONCAT = "tmp/E2SFCA/concat";
 	private static final String RESULT = "tmp/result";
-	
-	private static final DimensionDouble CELL_SIZE = new DimensionDouble(1000,1000);
-	private static final int NWORKERS = 25;
 	
 	public static final void main(String... args) throws Exception {
 //		PropertyConfigurator.configure("log4j.properties");
 		LogManager.getRootLogger().setLevel(Level.OFF);
 		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
+		CommandLineParser parser = new CommandLineParser("Y2S_1 ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -68,87 +58,58 @@ public class Y2S_1 {
 		Plan plan;
 		DataSet result;
 		
-		getGangnumGuFlowPop(marmot, TEMP_FLOW_POP_GANGNAM);
+		WeightFunction wfunc = Power.of(-0.1442);
 		
 		E2SFCAParameters params1 = new E2SFCAParameters();
-		params1.inputDataset(TEMP_FLOW_POP_GANGNAM);
-		params1.paramDataset(BUS_SUPPLY);
-		params1.outputDataset(RESULT_BUS);
-		params1.inputFeatureColumns("avg_08tmst","avg_15tmst");
-		params1.paramFeatureColumns("slevel_08","slevel_15");
-		params1.outputFeatureColumns("index_08", "index_15");
-		params1.taggedColumns("block_cd");
-		params1.radius(400);
-		params1.distanceDecayFunction(DistanceDecayFunctions.fromString("power:-0.1442"));
+		params1.setConsumerDataset(FLOW_POP);
+		params1.setProviderDataset(BUS_SUPPLY);
+		params1.setOutputDataset(RESULT_BUS);
+		params1.setConsumerFeatureColumns("avg_08tmst,avg_15tmst");
+		params1.setProviderFeatureColumns("slevel_08,slevel_15");
+		params1.setOutputFeatureColumns("index_08,index_15");
+		params1.setServiceDistance(400);
+		params1.setWeightFunction(wfunc);
 		marmot.executeProcess("e2sfca", params1.toMap());
-		
+	
 		E2SFCAParameters params2 = new E2SFCAParameters();
-		params2.inputDataset(TEMP_FLOW_POP_GANGNAM);
-		params2.paramDataset(SUBWAY_SUPPLY);
-		params2.outputDataset(RESULT_SUBWAY);
-		params2.inputFeatureColumns("avg_08tmst","avg_15tmst");
-		params2.paramFeatureColumns("slevel_08","slevel_15");
-		params2.outputFeatureColumns("index_08", "index_15");
-		params2.taggedColumns("block_cd");
-		params2.radius(800);
-		params2.distanceDecayFunction(DistanceDecayFunctions.fromString("power:-0.1442"));
+		params2.setConsumerDataset(FLOW_POP);
+		params2.setProviderDataset(SUBWAY_SUPPLY);
+		params2.setOutputDataset(RESULT_SUBWAY);
+		params2.setConsumerFeatureColumns("avg_08tmst,avg_15tmst");
+		params2.setProviderFeatureColumns("slevel_08,slevel_15");
+		params2.setOutputFeatureColumns("index_08,index_15");
+		params2.setServiceDistance(800);
+		params2.setWeightFunction(wfunc);
 		marmot.executeProcess("e2sfca", params2.toMap());
 		
-		DataSet busResult = marmot.getDataSet(RESULT_BUS);
-		GeometryColumnInfo gcInfo = busResult.getGeometryColumnInfo();
-		String hdfsPath = busResult.getHdfsPath();
-		String parentPath = FilenameUtils.getFullPathNoEndSeparator(hdfsPath);
-		marmot.deleteDataSet(RESULT_CONCAT);
-		marmot.bindExternalDataSet(RESULT_CONCAT, parentPath, DataSetType.FILE, gcInfo);
+		GeometryColumnInfo gcInfo = marmot.getDataSet(RESULT_BUS).getGeometryColumnInfo();
+		plan = marmot.planBuilder("append bus result")
+					.load(RESULT_BUS)
+					.project("the_geom,block_cd,index_08,index_15")
+					.build();
+		marmot.createDataSet(RESULT_CONCAT, plan, GEOMETRY(gcInfo), FORCE);
 		
-		plan = marmot.planBuilder("merge")
+		plan = marmot.planBuilder("append subway result")
+					.load(RESULT_SUBWAY)
+					.project("the_geom,block_cd,index_08,index_15")
+					.build();
+		marmot.createDataSet(RESULT_CONCAT, plan, GEOMETRY(gcInfo), APPEND);
+		
+		plan = marmot.planBuilder("combine two results")
 					.load(RESULT_CONCAT)
 					.groupBy("block_cd")
 						.tagWith("the_geom")
 						.aggregate(SUM("index_08").as("index_08"),
-								SUM("index_15").as("index_15"))
-					.store(RESULT)
+									SUM("index_15").as("index_15"))
 					.build();
 		result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
+
+		SampleUtils.printPrefix(result, 5);
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		marmot.deleteDataSet(RESULT_CONCAT);
 		marmot.deleteDataSet(RESULT_SUBWAY);
 		marmot.deleteDataSet(RESULT_BUS);
-		marmot.deleteDataSet(TEMP_FLOW_POP_GANGNAM);
-
-		SampleUtils.printPrefix(result, 5);
-		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
-	}
-	
-	private static Geometry getGangnamGu(MarmotRuntime marmot) {
-		Plan plan;
-		plan = marmot.planBuilder("강남구 추출")
-					.load(SGG)
-					.filter("sig_cd.startsWith('11') && sig_kor_nm == '강남구'")
-					.project("the_geom")
-					.build();
-		return marmot.executeLocally(plan).toList().get(0).getGeometry("the_geom");
-	}
-	
-	private static void getGangnumGuFlowPop(MarmotRuntime marmot, String output) {
-		Plan plan;
-
-		StopWatch watch = StopWatch.start();
-		Geometry gangnaum = getGangnamGu(marmot);
-		
-		DataSet flowPop = marmot.getDataSet(FLOW_POP);
-		plan = marmot.planBuilder("강남구 영역 유동인구 정보 추출")
-						.query(FLOW_POP, SpatialRelation.INTERSECTS, gangnaum)
-						.project("the_geom,block_cd,avg_08tmst,avg_15tmst")
-						.store(output)
-						.build();
-		GeometryColumnInfo gcInfo = flowPop.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(output, plan, GEOMETRY(gcInfo), FORCE);
-		watch.stop();
-		
-		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printPrefix(result, 5);
-		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

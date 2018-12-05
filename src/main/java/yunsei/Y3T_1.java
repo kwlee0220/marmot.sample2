@@ -12,7 +12,7 @@ import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.geo.LISAWeight;
+import marmot.optor.geo.advanced.LISAWeight;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
