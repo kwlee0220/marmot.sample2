@@ -14,7 +14,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Streams;
 import com.vividsolutions.jts.geom.Geometry;
 
 import marmot.DataSet;
@@ -29,6 +28,7 @@ import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
+import utils.stream.FStream;
 
 /**
  * 
@@ -53,12 +53,12 @@ public class Y2T_1 {
 		RATIOS.put(300, 0.2f);
 		RATIOS.put(400, 0.1f);
 		
-		Stream<String> otStrm = IntStream.rangeClosed(1, 25)
+		FStream<String> otStrm = FStream.rangeClosed(1, 25)
 										.mapToObj(idx -> String.format("ot%02d", idx));
-		Stream<String> dtStrm = IntStream.rangeClosed(1, 25)
+		FStream<String> dtStrm = FStream.rangeClosed(1, 25)
 										.mapToObj(idx -> String.format("dt%02d", idx));
-		FEATURE_COLNAMES = Streams.concat(otStrm, dtStrm)
-									.collect(Collectors.toList());
+		FEATURE_COLNAMES = FStream.concat(otStrm, dtStrm)
+									.toList();
 	}
 	
 	public static final void main(String... args) throws Exception {
