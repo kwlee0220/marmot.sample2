@@ -66,11 +66,11 @@ public class Step1Buildings {
 					.spatialJoin("the_geom", EMD,
 								"원천도형ID,old,be5,param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")
 					.groupBy("emd_cd")
-						.tagWith(geomCol + ",emd_nm")
+						.withTags(geomCol + ",emd_nm")
 						.workerCount(1)
 						.aggregate(SUM("old").as("old_cnt"), SUM("be5").as("be5_cnt"),
 									COUNT().as("bld_cnt"))
-					.expand1("old_ratio:double", "(double)old_cnt/bld_cnt")
+					.defineColumn("old_ratio:double", "(double)old_cnt/bld_cnt")
 					.store(RESULT)
 					.build();
 		GeometryColumnInfo gcInfo = emd.getGeometryColumnInfo();

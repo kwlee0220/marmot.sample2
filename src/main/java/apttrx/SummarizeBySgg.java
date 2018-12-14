@@ -65,7 +65,7 @@ public class SummarizeBySgg {
 										AVG("평당거래액").as("평당거래액"),
 										MAX("거래금액").as("최대거래액"),
 										MIN("거래금액").as("최소거래액"))
-						.expand1("평당거래액:int")
+						.defineColumn("평당거래액:int")
 						
 						.join("sgg_cd", SGG, "sig_cd",
 								String.format("*,param.{%s,sig_kor_nm}", geomCol), null)

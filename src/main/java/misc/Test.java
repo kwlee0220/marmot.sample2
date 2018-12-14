@@ -67,7 +67,7 @@ public class Test {
 					.load("tmp/cada2")
 					.spatialJoin("the_geom", "tmp/hcode2",
 								"the_geom,pnu,param.the_geom as the_geom2, param.hcode")
-					.expand1("the_geom:point",
+					.defineColumn("the_geom:point",
 							"ST_Centroid(the_geom.intersection(the_geom2))")
 					.transformCrs("the_geom", "EPSG:5186", "EPSG:4326")
 					.store("tmp/result")

@@ -53,7 +53,7 @@ public class FindHotHospitals {
 											WITHIN_DISTANCE(50))
 								.filter("bz_stt_nm=='운영중'")
 								.groupBy("gid")
-									.tagWith("the_geom,bplc_nm")
+									.withTags("the_geom,bplc_nm")
 									.aggregate(COUNT())
 								.rank("count:D", "rank")
 								.store(RESULT)

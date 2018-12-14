@@ -69,7 +69,7 @@ public class Step1FlowPop {
 							.spatialJoin("the_geom", EMD,
 									"*-{the_geom},param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")
 							.groupBy("emd_cd")
-								.tagWith(geomCol + ",year,emd_nm")
+								.withTags(geomCol + ",year,emd_nm")
 								.workerCount(1)
 								.aggregate(AVG("avg").as("avg"))
 							.project(String.format("%s,*-{%s}", geomCol, geomCol))

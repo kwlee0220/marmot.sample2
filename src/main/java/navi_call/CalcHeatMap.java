@@ -64,7 +64,7 @@ public class CalcHeatMap {
 							.loadSquareGridFile(new SquareGrid(envl, cellSize), 32)
 							.spatialJoin("the_geom", TAXI_LOG, "*")
 							.groupBy("cell_id")
-								.tagWith("the_geom")
+								.withTags("the_geom")
 								.aggregate(COUNT())
 							.store(RESULT)
 							.build();

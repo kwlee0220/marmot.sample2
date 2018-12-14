@@ -83,7 +83,7 @@ public class Process {
 						.loadSpatialIndexJoin(OUTPUT_1987_S, OUTPUT_2007_S, colExpr)
 						.intersection("the_geom", "g2", "the_geom")
 						.groupBy("uid1987,uid2007")
-							.tagWith("c1987,c2007")
+							.withTags("c1987,c2007")
 							.workerCount(1)
 							.aggregate(GEOM_UNION("the_geom").as("the_geom"))
 						.project("the_geom,c1987,c2007")

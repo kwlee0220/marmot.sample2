@@ -77,10 +77,10 @@ public class SummarizeByHighSchoolShort {
 						.load(TEMP)
 						// 고등학교를 기준으로 그룹핑하여 집계한다.
 						.groupBy("id")
-							.tagWith(geomCol + ",name")
+							.withTags(geomCol + ",name")
 							.aggregate(SUM("trade_count").as("trade_count"),
 										SUM("lease_count").as("lease_count"))
-						.expand1("count:long", "trade_count+lease_count")
+						.defineColumn("count:long", "trade_count+lease_count")
 						.sort("count:D")
 						.store(RESULT)
 						.build();
@@ -116,9 +116,9 @@ public class SummarizeByHighSchoolShort {
 					
 					// 고등학교를 기준으로 그룹핑하여 집계한다.
 					.groupBy("id")
-						.tagWith(schoolGeomCol + ",name")
+						.withTags(schoolGeomCol + ",name")
 						.aggregate(COUNT().as("trade_count"))
-					.expand1("lease_count:long", "0")
+					.defineColumn("lease_count:long", "0")
 					.project("the_geom,id,name,trade_count,lease_count")
 					
 					.store(TEMP)
@@ -148,9 +148,9 @@ public class SummarizeByHighSchoolShort {
 					
 					// 고등학교를 기준으로 그룹핑하여 집계한다.
 					.groupBy("id")
-						.tagWith(schoolGeomCol + ",name")
+						.withTags(schoolGeomCol + ",name")
 						.aggregate(COUNT().as("lease_count"))
-					.expand1("trade_count:long", "0")
+					.defineColumn("trade_count:long", "0")
 					.project("the_geom,id,name,trade_count,lease_count")
 					
 					.store(TEMP)

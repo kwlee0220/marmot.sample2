@@ -150,7 +150,7 @@ public class Y2T_1_2 {
 		plan = marmot.planBuilder("analysis")
 					.load(TEMP_JOINED)
 					.groupBy("tot_oa_cd")
-						.tagWith("param_geom")
+						.withTags("param_geom")
 						.aggregate(aggrFuncList)
 					.project("param_geom as the_geom, *-{param_geom}")
 					.store(RESULT)

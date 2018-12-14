@@ -48,7 +48,7 @@ public class CalcSggHistogram {
 								.loadSpatialIndexJoin(LEFT_DATASET, RIGHT_DATASET,
 											"left.{id},right.{the_geom,SIG_CD,SIG_KOR_NM}")
 								.groupBy("SIG_CD")
-									.tagWith("the_geom,SIG_KOR_NM")
+									.withTags("the_geom,SIG_KOR_NM")
 									.count()
 								.store(OUTPUT_DATASET)
 								.build();

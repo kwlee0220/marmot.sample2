@@ -62,7 +62,7 @@ public class Test2017_2 {
 								.centroid("cell_geom")
 								.intersectsBinary("cell_geom", "the_geom")
 								.groupBy("cell_id")
-									.tagWith("cell_geom")
+									.withTags("cell_geom")
 									.aggregate(AggregateFunction.COUNT())
 								.project("cell_geom as the_geom,*-{cell_geom}")
 								.store(GRID)

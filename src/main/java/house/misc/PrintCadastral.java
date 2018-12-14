@@ -18,7 +18,6 @@ import marmot.RecordSchema;
 import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
-import marmot.rset.RecordSets;
 import marmot.support.DefaultRecord;
 import marmot.type.DataType;
 import utils.CommandLine;
@@ -67,7 +66,7 @@ public class PrintCadastral {
 										return rec;
 									})
 									.collect(Collectors.toList());
-		RecordSet rset = RecordSets.from(idList);
+		RecordSet rset = RecordSet.from(idList);
 		marmot.createDataSet("tmp/diff3", rset.getRecordSchema(), FORCE).append(rset);
 		
 		Plan plan;

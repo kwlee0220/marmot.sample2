@@ -95,7 +95,7 @@ public class Y2T_2 {
 					.spatialOuterJoin("the_geom", TEMP_TAXI, "*,param.{hour,status}")
 					.expand("supply:int, demand:int", expr)
 					.groupBy("cell_id,hour")
-						.tagWith("the_geom")
+						.withTags("the_geom")
 						.aggregate(SUM("supply").as("supply_count"),
 									SUM("demand").as("demand_count"))
 					.store(RESULT)

@@ -51,7 +51,7 @@ public class FindPassingStation {
 		Plan plan = marmot.planBuilder("find_passing_station")
 							.load(TAXI_TRJ)
 							.filter("status == 3")
-							.expand1("the_geom:line_string", "ST_TRLineString(trajectory)")
+							.defineColumn("the_geom:line_string", "ST_TRLineString(trajectory)")
 							.withinDistance("the_geom", key, 100)
 							.project("*-{trajectory}")
 							.store(OUTPUT)

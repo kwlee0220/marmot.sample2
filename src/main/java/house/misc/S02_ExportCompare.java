@@ -58,7 +58,7 @@ public class S02_ExportCompare {
 		Plan plan;
 		plan = marmot.planBuilder("export01")
 					.load(input)
-					.expand1("area:double", "ST_Area(the_geom)")
+					.defineColumn("area:double", "ST_Area(the_geom)")
 					.project("pnu,area")
 					.sort("pnu:A,area:A")
 					.store("tmp/result")
