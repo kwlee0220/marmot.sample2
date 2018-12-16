@@ -69,7 +69,7 @@ public class S02_ExportCompare {
 			RecordSet rset = ds.read() ) {
 			rset.forEach(r -> {
 				String pnu = r.getString("pnu");
-				double area = r.getDouble("area", -1);
+				double area = r.getDouble("area");
 				
 				ps.printf("%s,%.2f%n", pnu, area);
 			});
