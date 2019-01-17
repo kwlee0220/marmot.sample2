@@ -16,7 +16,6 @@ import org.apache.log4j.LogManager;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Geometry;
 
-import marmot.ColumnName;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
@@ -45,7 +44,7 @@ public class Y2T_1 {
 	private static final String TEMP_HISTOGRAM = "tmp/histogram";
 	private static final String RESULT = "tmp/result";
 	
-	private static final List<ColumnName> FEATURE_COLNAMES;
+	private static final List<String> FEATURE_COLNAMES;
 	
 	private static final Map<Integer,Float> RATIOS = Maps.newHashMap();
 	static {
@@ -58,9 +57,7 @@ public class Y2T_1 {
 										.mapToObj(idx -> String.format("ot%02d", idx));
 		FStream<String> dtStrm = FStream.rangeClosed(1, 25)
 										.mapToObj(idx -> String.format("dt%02d", idx));
-		FEATURE_COLNAMES = FStream.concat(otStrm, dtStrm)
-									.map(ColumnName::of)
-									.toList();
+		FEATURE_COLNAMES = FStream.concat(otStrm, dtStrm).toList();
 	}
 	
 	public static final void main(String... args) throws Exception {

@@ -9,7 +9,6 @@ import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Point;
 
 import common.SampleUtils;
-import marmot.ColumnName;
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -53,7 +52,7 @@ public class SampleKMeans {
 		KMeansParameters params = new KMeansParameters();
 		params.inputDataset(INPUT);
 		params.outputDataset(OUTPUT);
-		params.featureColumns(Lists.newArrayList(ColumnName.of("center")));
+		params.featureColumns(Lists.newArrayList("center"));
 		params.clusterColumn("cluster_id");
 //		params.initialCentroids(getInitCentroids(marmot, 9, 0.025));
 		params.terminationDistance(100);
