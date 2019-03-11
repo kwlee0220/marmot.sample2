@@ -65,7 +65,7 @@ public class S1_MapMatchingTaxiLog2 {
 		
 		List<String> quadKeys;
 		try ( RecordSet rset = marmot.getDataSet(QUAD_KEY_FILE).read() ) {
-			quadKeys = rset.fstream().map(r -> r.getString(0)).toList();
+			quadKeys = rset.stream().map(r -> r.getString(0)).toList();
 		}
 		finally {
 //			marmot.deleteDataSet(QUAD_KEY_FILE);

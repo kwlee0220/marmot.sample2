@@ -1,7 +1,6 @@
 package module;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -76,6 +75,6 @@ public class SampleKMeans {
 								.build();
 		return marmot.executeLocally(plan).stream()
 					.map(r -> (Point)r.getGeometry(0))
-					.collect(Collectors.toList());
+					.toList();
 	}
 }

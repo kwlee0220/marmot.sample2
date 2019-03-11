@@ -80,7 +80,7 @@ public class FindByTopKUsers {
 								.pickTopK("count:D", 5)
 								.build();
 		try ( RecordSet rset = marmot.executeToRecordSet(plan) ) {
-			return rset.fstream().map(r -> r.getString("user_id")).toList();
+			return rset.stream().map(r -> r.getString("user_id")).toList();
 		}
 	}
 }

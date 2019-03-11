@@ -77,7 +77,6 @@ public class FindPassingStation {
 		return marmot.executeLocally(plan)
 						.stream()
 						.map(rec -> rec.getGeometry(0))
-						.findAny()
-						.orElse(null);
+						.findFirst().getOrNull();
 	}
 }
