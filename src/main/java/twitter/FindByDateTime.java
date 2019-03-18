@@ -2,7 +2,7 @@ package twitter;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
-import static marmot.support.DateTimeFunctions.ST_DTToString;
+import static marmot.support.DateTimeFunctions.DateTimeToString;
 
 import java.time.LocalDateTime;
 
@@ -51,10 +51,10 @@ public class FindByDateTime {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		// 2015.12.25 부터  2015.12.26 이전까지 tweets을 검색하기 위한 조건 문자열 생성
-		String initPred = String.format("$begin=ST_DTFromString('%s'); "
-										+ "$end=ST_DTFromString('%s');",
-										ST_DTToString(FROM), ST_DTToString(TO));
-		String betweenDTPred = "ST_DTIsBetween(created_at,$begin,$end)";
+		String initPred = String.format("$begin=DateFromString('%s'); "
+										+ "$end=DateFromString('%s');",
+										DateTimeToString(FROM), DateTimeToString(TO));
+		String betweenDTPred = "DateIsBetween(created_at,$begin,$end)";
 		
 		// 질의 처리를 위한 질의 프로그램 생성
 		Plan plan = marmot.planBuilder("find_by_datetime")
