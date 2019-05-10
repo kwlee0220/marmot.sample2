@@ -2,6 +2,7 @@ package navi_call;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
+import static marmot.optor.geo.SpatialRelation.WITHIN_DISTANCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -52,7 +53,7 @@ public class FindPassingStation {
 							.load(TAXI_TRJ)
 							.filter("status == 3")
 							.defineColumn("the_geom:line_string", "ST_TRLineString(trajectory)")
-							.withinDistance("the_geom", key, 100)
+							.filterSpatially("the_geom", WITHIN_DISTANCE(100), key)
 							.project("*-{trajectory}")
 							.store(OUTPUT)
 							.build();

@@ -2,6 +2,7 @@ package navi_call.map;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -54,7 +55,7 @@ public class S2_FindDongTaxiLog {
 		Plan plan;
 		plan = marmot.planBuilder("동내_로그_추출")
 					.load(INPUT)
-					.intersects(geomCol, guBoundary)
+					.filterSpatially(geomCol, INTERSECTS, guBoundary)
 					.store(RESULT)
 					.build();
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();

@@ -72,7 +72,7 @@ public class PrintCadastral {
 		Plan plan;
 		plan = marmot.planBuilder("test")
 					.load(BUILDINGS)
-					.join("bd_mgt_sn", "tmp/diff3", "id", "*", null)
+					.hashJoin("bd_mgt_sn", "tmp/diff3", "id", "*", null)
 					.store("tmp/diff_buildings")
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");

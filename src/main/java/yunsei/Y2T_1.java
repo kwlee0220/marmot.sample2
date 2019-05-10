@@ -2,6 +2,7 @@ package yunsei;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.Arrays;
 import java.util.List;
@@ -99,7 +100,7 @@ public class Y2T_1 {
 		plan = marmot.planBuilder("버스 승하차에서 서울부분 추출")
 					.load(BUS_OT_DT)
 					// 서울시 영역만 추출한다.
-					.intersects(geomCol, seoul)
+					.filterSpatially(geomCol, INTERSECTS, seoul)
 					.store(TEMP_BUS_SEOUL)
 					.build();
 

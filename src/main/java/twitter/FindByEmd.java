@@ -13,7 +13,6 @@ import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -59,7 +58,7 @@ public class FindByEmd {
 		
 		Plan plan = marmot.planBuilder("find_emd")
 							// tweet 레이어를 읽어, 서초동 행정 영역과 겹치는 트위 레코드를 검색한다.
-							.query(TWEETS, SpatialRelation.INTERSECTS, border)
+							.query(TWEETS, border)
 							.project("the_geom,id")
 							// 검색된 레코드를 'OUTPUT_LAYER' 레이어에 저장시킨다.
 							.store(RESULT)

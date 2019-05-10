@@ -55,7 +55,7 @@ public class SummarizeBySgg {
 		
 		plan = marmot.planBuilder("summarize_by_station")
 						.load(APT_TRX)
-						.join("시군구,번지,단지명", APT_LOC, "시군구,번지,단지명", "*,param.{info}", null)
+						.hashJoin("시군구,번지,단지명", APT_LOC, "시군구,번지,단지명", "*,param.{info}", null)
 						.expand("평당거래액:int,sgg_cd:string",
 								"평당거래액 = (int)Math.round((거래금액*3.3) / 전용면적);"
 										+ "sgg_cd = info.getSggCode();")
@@ -67,7 +67,7 @@ public class SummarizeBySgg {
 										MIN("거래금액").as("최소거래액"))
 						.defineColumn("평당거래액:int")
 						
-						.join("sgg_cd", SGG, "sig_cd",
+						.hashJoin("sgg_cd", SGG, "sig_cd",
 								String.format("*,param.{%s,sig_kor_nm}", geomCol), null)
 						.sort("거래건수:D")
 						

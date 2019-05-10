@@ -111,7 +111,7 @@ public class SummarizeByHighSchoolShort {
 											locGeomCol, schoolGeomCol))
 					
 					// 고등학교 1km내 위치에 해당하는 아파트 거래 정보를 검색.
-					.join("시군구,번지,단지명", APT_TRADE_TRX, "시군구,번지,단지명",
+					.hashJoin("시군구,번지,단지명", APT_TRADE_TRX, "시군구,번지,단지명",
 							"the_geom,id,name,param.*", null)
 					
 					// 고등학교를 기준으로 그룹핑하여 집계한다.
@@ -143,7 +143,7 @@ public class SummarizeByHighSchoolShort {
 											locGeomCol, schoolGeomCol))
 					
 					// 고등학교 1km내 위치에 해당하는 아파트 거래 정보를 검색.
-					.join("시군구,번지,단지명", APT_LEASE_TRX, "시군구,번지,단지명",
+					.hashJoin("시군구,번지,단지명", APT_LEASE_TRX, "시군구,번지,단지명",
 							"the_geom,id,name,param.*", null)
 					
 					// 고등학교를 기준으로 그룹핑하여 집계한다.

@@ -2,7 +2,6 @@ package appls;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -67,7 +66,7 @@ public class FilterInSeoul {
 		plan = marmot.planBuilder("tag_geom")
 					.load(LAND_USAGE)
 					.filter("법정동코드.startsWith('11')")
-					.join("고유번호", CADASTRAL_SEOUL, "pnu", "*,param.the_geom", null)
+					.hashJoin("고유번호", CADASTRAL_SEOUL, "pnu", "*,param.the_geom", null)
 					.project("the_geom, 고유번호 as pnu, 용도지역지구코드 as code, 용도지역지구명 as name")
 					.store(RESULT)
 					.build();
@@ -97,7 +96,7 @@ public class FilterInSeoul {
 		
 		plan = marmot.planBuilder("grid_taxi_logs")
 					// 택시 로그를  읽는다.
-					.query(CADASTRAL, INTERSECTS, seoul)
+					.query(CADASTRAL, seoul)
 					// 승하차 로그만 선택한다.
 					.filter("pnu.startsWith('11')")
 					.store(output)
