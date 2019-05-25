@@ -1,16 +1,14 @@
 package house;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
-import marmot.plan.LoadOption;
+import marmot.plan.LoadOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -58,12 +56,12 @@ public class S03_FindRegistreredBuildingsFixed {
 		String geomCol = input.getGeometryColumn();
 
 		Plan plan = marmot.planBuilder("총괄표제부 보유 건물 추출")
-						.load(registry, LoadOption.SPLIT_COUNT(8))
+						.load(registry, LoadOptions.create().splitCount(8))
 						.knnJoin(geomCol, buildings, 10, 1, "param.*")
 						.store(result)
 						.build();
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		DataSet ds = marmot.createDataSet(result, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet ds = marmot.createDataSet(result, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		ds.cluster();
 		elapsed.stop();
 		

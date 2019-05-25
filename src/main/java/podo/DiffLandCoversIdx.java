@@ -1,13 +1,12 @@
 package podo;
 
-import static marmot.DataSetOption.FORCE;
 import static marmot.optor.AggregateFunction.SUM;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -60,7 +59,7 @@ public class DiffLandCoversIdx {
 						.expand("total_area:long", "total_area = Math.round(total_area)")
 						.store(RESULT)
 						.build();
-		marmot.createDataSet(RESULT, plan, FORCE);
+		marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		
 		watch.stop();
 		System.out.println("완료: 토지피복도 교차조인");

@@ -1,15 +1,15 @@
 package navi_call;
 
 import static marmot.optor.AggregateFunction.COUNT;
-import static marmot.plan.SpatialJoinOption.WITHIN_DISTANCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -49,8 +49,9 @@ public class FindHotHospitals {
 								.load(TAXI_LOG)
 								.filter("status==1 || status==2")
 								.spatialJoin("the_geom", HOSPITAL,
-											"param.{the_geom,gid,bplc_nm,bz_stt_nm}",
-											WITHIN_DISTANCE(50))
+											SpatialJoinOptions.create()
+												.outputColumns("param.{the_geom,gid,bplc_nm,bz_stt_nm}")
+												.withinDistance(50))
 								.filter("bz_stt_nm=='운영중'")
 								.groupBy("gid")
 									.withTags("the_geom,bplc_nm")
@@ -58,7 +59,7 @@ public class FindHotHospitals {
 								.rank("count:D", "rank")
 								.store(RESULT)
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 50);

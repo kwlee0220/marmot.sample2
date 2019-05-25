@@ -1,10 +1,9 @@
 package twitter;
 
-import static marmot.DataSetOption.FORCE;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -47,7 +46,7 @@ public class GroupByWeekDay {
 								.drop(0)
 								.store(RESULT)
 								.build();
-		marmot.createDataSet(RESULT, plan, FORCE);
+		marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		
 		watch.stop();
 		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());

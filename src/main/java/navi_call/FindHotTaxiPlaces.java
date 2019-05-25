@@ -6,8 +6,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -58,7 +58,7 @@ public class FindHotTaxiPlaces {
 								.list()
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 50);

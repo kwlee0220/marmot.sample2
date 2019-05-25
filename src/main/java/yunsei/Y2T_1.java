@@ -1,7 +1,5 @@
 package yunsei;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.Arrays;
@@ -21,6 +19,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.process.geo.FeatureVector;
 import marmot.process.geo.FeatureVectorHandle;
@@ -104,7 +103,7 @@ public class Y2T_1 {
 					.store(TEMP_BUS_SEOUL)
 					.build();
 
-		result = marmot.createDataSet(TEMP_BUS_SEOUL, plan, GEOMETRY(gcInfo), FORCE);
+		result = marmot.createDataSet(TEMP_BUS_SEOUL, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		System.out.println("done: crop bus_ot_dt with seoul");
 		
 		DataSet multiRings = doMultiRing(marmot, result, seoul, MULTI_RINGS);
@@ -129,7 +128,7 @@ public class Y2T_1 {
 					.store(TEMP_HISTOGRAM)
 					.build();
 
-		result = marmot.createDataSet(TEMP_HISTOGRAM, plan, GEOMETRY(gcInfo), FORCE);
+		result = marmot.createDataSet(TEMP_HISTOGRAM, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		marmot.deleteDataSet(MULTI_RINGS);
 		System.out.println("done: build_histogram, elapsed=" + watch.getElapsedMillisString());
@@ -197,7 +196,7 @@ public class Y2T_1 {
 							.build();
 			if ( multiRings == null ) {
 				GeometryColumnInfo gcInfo = bus.getGeometryColumnInfo();
-				multiRings = marmot.createDataSet(outputDs, plan, GEOMETRY(gcInfo), FORCE);
+				multiRings = marmot.createDataSet(outputDs, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 			}
 			else {
 				marmot.execute(plan);

@@ -1,7 +1,5 @@
 package podo;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.GEOM_UNION;
 
 import java.io.File;
@@ -13,9 +11,10 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.externio.geojson.GeoJsonRecordSetWriter;
-import marmot.plan.LoadOption;
+import marmot.plan.LoadOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -90,7 +89,7 @@ public class Process {
 						.store(RESULT)
 						.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		return result;
@@ -122,14 +121,14 @@ public class Process {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan = marmot.planBuilder(inputDsId + "_분할")
-							.load(inputDsId, LoadOption.SPLIT_COUNT(16))
+							.load(inputDsId, LoadOptions.create().splitCount(16))
 							.project("the_geom, 분류구분 as cover")
 							.assignUid("uid")
 							.splitGeometry(gcInfo.name())
 							.drop(0)
 							.store(outputDsId)
 							.build();
-		DataSet result = marmot.createDataSet(outputDsId, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(outputDsId, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}

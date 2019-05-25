@@ -1,9 +1,5 @@
 package yunsei;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-import static marmot.plan.SpatialJoinOption.NEGATED;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
@@ -11,8 +7,10 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.advanced.LISAWeight;
+import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -71,12 +69,13 @@ public class Y3T_1 {
 					.project(geomCol + ",refl70,point_x,point_y")
 					.store(TEMP_POP)
 					.build();
-		result = marmot.createDataSet(TEMP_POP, plan, GEOMETRY(gcInfo), FORCE);
+		result = marmot.createDataSet(TEMP_POP, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		System.out.println("elapsed: " + watch.getElapsedMillisString());
 
 		plan = marmot.planBuilder("")
 					.load(POPULATION)
-					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES, NEGATED)
+					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES,
+										SpatialJoinOptions.create().negated(true))
 					.project(geomCol + ",refl70,point_x,point_y")
 					.store(TEMP_POP)
 					.build();
@@ -88,7 +87,7 @@ public class Y3T_1 {
 					.loadGetisOrdGi(TEMP_POP, "refl70", 500, LISAWeight.FIXED_DISTANCE_BAND)
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		System.out.println("done, elapsed=" + watch.stopAndGetElpasedTimeString());
 	}
@@ -104,7 +103,7 @@ public class Y3T_1 {
 					.store(outputDsId)
 					.build();
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(outputDsId, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(outputDsId, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		return result;
 	}

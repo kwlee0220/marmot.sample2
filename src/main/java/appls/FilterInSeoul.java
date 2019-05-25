@@ -1,8 +1,5 @@
 package appls;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
@@ -10,10 +7,10 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -70,7 +67,7 @@ public class FilterInSeoul {
 					.project("the_geom, 고유번호 as pnu, 용도지역지구코드 as code, 용도지역지구명 as name")
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
+		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);
@@ -102,6 +99,6 @@ public class FilterInSeoul {
 					.store(output)
 					.build();
 		GeometryColumnInfo gcInfo = taxi.getGeometryColumnInfo();
-		marmot.createDataSet(output, plan, GEOMETRY(gcInfo), FORCE);
+		marmot.createDataSet(output, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 	}
 }

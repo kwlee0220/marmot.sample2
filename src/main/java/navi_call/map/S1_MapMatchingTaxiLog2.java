@@ -1,20 +1,17 @@
 package navi_call.map;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import java.util.List;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSet;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
-import marmot.plan.GeomOpOption;
+import marmot.plan.GeomOpOptions;
 import marmot.process.geo.EstimateClusterQuadKeysParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import navi_call.Globals;
@@ -75,7 +72,7 @@ public class S1_MapMatchingTaxiLog2 {
 		Plan plan;
 		plan = marmot.planBuilder("택시로그_맵_매핑")
 					.load(INPUT)
-					.buffer(geomCol, Globals.DISTANCE, GeomOpOption.OUTPUT("buffer"))
+					.buffer(geomCol, Globals.DISTANCE, GeomOpOptions.create().outputColumn("buffer"))
 					.attachQuadKey("buffer", "EPSG:5186", quadKeys, true, true)
 					.project("*-{buffer,__quad_key,__mbr}, __quad_key as quad_key")
 					.groupBy("quad_key")
@@ -86,7 +83,7 @@ public class S1_MapMatchingTaxiLog2 {
 							"*,param.{the_geom as link_geom, link_id, sub_link_no}")
 					.store("tmp/result")
 					.build();
-		DataSet result = marmot.createDataSet("tmp/result", plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet("tmp/result", plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 10);

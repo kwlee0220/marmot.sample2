@@ -1,8 +1,5 @@
 package podo;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -10,8 +7,9 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
-import marmot.plan.LoadOption;
+import marmot.plan.LoadOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -60,7 +58,7 @@ public class SplitLandCover {
 		String geomCol = ds.getGeometryColumn();
 		
 		Plan plan = marmot.planBuilder(inputDsId + "_분할")
-							.load(inputDsId, LoadOption.SPLIT_COUNT(16))
+							.load(inputDsId, LoadOptions.create().splitCount(16))
 							.assignUid("uid")
 							.splitGeometry(geomCol)
 							.drop(0)
@@ -69,7 +67,7 @@ public class SplitLandCover {
 
 		StopWatch watch = StopWatch.start();
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		marmot.createDataSet(outputDsId, plan, GEOMETRY(gcInfo), FORCE);
+		marmot.createDataSet(outputDsId, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		watch.stop();
 		
 		System.out.printf("done: input=%s elapsed=%s%n", inputDsId, watch.getElapsedMillisString());

@@ -1,7 +1,5 @@
 package yunsei;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.Arrays;
@@ -21,8 +19,10 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
+import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -88,7 +88,7 @@ public class Y2T_1_2 {
 					.filterSpatially(geomCol, INTERSECTS, seoul)
 					.store(TEMP_BUS_SEOUL)
 					.build();
-		result = marmot.createDataSet(TEMP_BUS_SEOUL, plan, GEOMETRY(gcInfo), FORCE);
+		result = marmot.createDataSet(TEMP_BUS_SEOUL, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		watch.stop();
 		
 		DataSet buffereds = null;
@@ -108,7 +108,7 @@ public class Y2T_1_2 {
 						.store(MULTI_RINGS)
 						.build();
 			if ( buffereds == null ) {
-				buffereds = marmot.createDataSet(MULTI_RINGS, plan, GEOMETRY(gcInfo), FORCE);
+				buffereds = marmot.createDataSet(MULTI_RINGS, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 			}
 			else {
 				marmot.execute(plan);
@@ -142,11 +142,13 @@ public class Y2T_1_2 {
 					.load(COLLECT)
 					
 //					.buildSpatialHistogram(geomCol, MULTI_RINGS, valueColNames)
-					.intersectionJoin(geomCol, COLLECT, "*,param.tot_oa_cd,param.the_geom as param_geom")
+					.intersectionJoin(geomCol, COLLECT,
+									SpatialJoinOptions.create()
+													.outputColumns("*,param.tot_oa_cd,param.the_geom as param_geom"))
 					.expand("ratio:double", expr)
 					.store(TEMP_JOINED)
 					.build();
-		marmot.createDataSet(TEMP_JOINED, plan, GEOMETRY(gcInfo), FORCE);
+		marmot.createDataSet(TEMP_JOINED, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		plan = marmot.planBuilder("analysis")
 					.load(TEMP_JOINED)
@@ -156,7 +158,7 @@ public class Y2T_1_2 {
 					.project("param_geom as the_geom, *-{param_geom}")
 					.store(RESULT)
 					.build();
-		marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 //		ClusterWithKMeansParameters params = new ClusterWithKMeansParameters();
 //		params.dataset(INPUT);

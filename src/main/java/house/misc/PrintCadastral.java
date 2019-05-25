@@ -1,8 +1,5 @@
 package house.misc;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -16,6 +13,7 @@ import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
@@ -67,7 +65,7 @@ public class PrintCadastral {
 									})
 									.collect(Collectors.toList());
 		RecordSet rset = RecordSet.from(idList);
-		marmot.createDataSet("tmp/diff3", rset.getRecordSchema(), FORCE).append(rset);
+		marmot.createDataSet("tmp/diff3", rset.getRecordSchema(), StoreDataSetOptions.create().force(true)).append(rset);
 		
 		Plan plan;
 		plan = marmot.planBuilder("test")
@@ -76,7 +74,7 @@ public class PrintCadastral {
 					.store("tmp/diff_buildings")
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet("tmp/diff_buildings", plan, GEOMETRY(gcInfo), FORCE);
+		marmot.createDataSet("tmp/diff_buildings", plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		marmot.disconnect();
 	}

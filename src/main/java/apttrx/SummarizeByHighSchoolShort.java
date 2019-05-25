@@ -1,7 +1,5 @@
 package apttrx;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
 
@@ -13,8 +11,9 @@ import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSchema;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
-import marmot.plan.GeomOpOption;
+import marmot.plan.GeomOpOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -69,7 +68,7 @@ public class SummarizeByHighSchoolShort {
 		Plan plan1 = countTradeTransaction(marmot);
 		Plan plan2 = countLeaseTransaction(marmot);
 
-		marmot.createDataSet(TEMP, plan1, GEOMETRY(gcInfo), FORCE);
+		marmot.createDataSet(TEMP, plan1, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		marmot.execute(plan2);
 		System.out.println("done: 아파트 거래 정보 지오코딩, elapsed=" + watch.getElapsedMillisString());
 		
@@ -84,7 +83,7 @@ public class SummarizeByHighSchoolShort {
 						.sort("count:D")
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan1, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan1, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		watch.stop();
 		
 		marmot.deleteDataSet(TEMP);
@@ -105,7 +104,7 @@ public class SummarizeByHighSchoolShort {
 					
 					// 고등학교 주변 1km 내의 아파트 검색.
 					.centroid(locGeomCol)
-					.buffer(locGeomCol, 1000, GeomOpOption.OUTPUT("circle"))
+					.buffer(locGeomCol, 1000, GeomOpOptions.create().outputColumn("circle"))
 					.spatialJoin("circle", HIGH_SCHOOLS,
 								String.format("*-{%s},param.{%s,id,name}",
 											locGeomCol, schoolGeomCol))
@@ -137,7 +136,7 @@ public class SummarizeByHighSchoolShort {
 					
 					// 고등학교 주변 1km 내의 아파트 검색.
 					.centroid(locGeomCol)
-					.buffer(locGeomCol, 1000, GeomOpOption.OUTPUT("circle"))
+					.buffer(locGeomCol, 1000, GeomOpOptions.create().outputColumn("circle"))
 					.spatialJoin("circle", HIGH_SCHOOLS,
 								String.format("*-{%s},param.{%s,id,name}",
 											locGeomCol, schoolGeomCol))
@@ -166,7 +165,7 @@ public class SummarizeByHighSchoolShort {
 							.store(HIGH_SCHOOLS)
 							.build();
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		return result;
 	}

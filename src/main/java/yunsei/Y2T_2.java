@@ -1,7 +1,5 @@
 package yunsei;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.Level;
@@ -13,6 +11,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -79,7 +78,7 @@ public class Y2T_2 {
 					.store(TEMP_TAXI)
 					.build();
 
-		result = marmot.createDataSet(TEMP_TAXI, plan, GEOMETRY(gcInfo), FORCE);
+		result = marmot.createDataSet(TEMP_TAXI, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		System.out.println("done: 택시 승하차 로그 선택, elapsed=" + watch.getElapsedMillisString());
 		result.cluster();
 		System.out.println("done: 승하차 로그 클러스터링, elapsed=" + watch.getElapsedMillisString());
@@ -91,7 +90,7 @@ public class Y2T_2 {
 
 		// 버스 승하차 정보에서 서울 구역부분만 추출한다.
 		plan = marmot.planBuilder("그리드_생성_후_셀별_승하차_횟수_집계")
-					.loadSquareGridFile(new SquareGrid(bounds, CELL_SIZE), NWORKERS)
+					.loadGrid(new SquareGrid(bounds, CELL_SIZE), NWORKERS)
 					.spatialOuterJoin("the_geom", TEMP_TAXI, "*,param.{hour,status}")
 					.expand("supply:int, demand:int", expr)
 					.groupBy("cell_id,hour")
@@ -100,21 +99,21 @@ public class Y2T_2 {
 									SUM("demand").as("demand_count"))
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		plan = marmot.planBuilder("새벽_01시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 1")
 					.store(RESULT01)
 					.build();
-		result = marmot.createDataSet(RESULT01, plan, GEOMETRY(gcInfo), FORCE);
+		result = marmot.createDataSet(RESULT01, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		plan = marmot.planBuilder("새벽_03시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 3")
 					.store(RESULT03)
 					.build();
-		result = marmot.createDataSet(RESULT03, plan, GEOMETRY(gcInfo), FORCE);
+		result = marmot.createDataSet(RESULT03, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		System.out.println("done, elapsed=" + watch.stopAndGetElpasedTimeString());
 		

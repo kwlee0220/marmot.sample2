@@ -1,7 +1,5 @@
 package apttrx;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.MAX;
@@ -13,6 +11,7 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -74,7 +73,7 @@ public class SummarizeBySgg {
 						.store(RESULT)
 						.build();
 		GeometryColumnInfo gcInfo = emd.getGeometryColumnInfo();
-		marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		watch.stop();
 		
 		System.out.printf("elapsed: %s%n", watch.getElapsedMillisString());

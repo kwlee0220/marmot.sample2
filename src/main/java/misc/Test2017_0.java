@@ -1,8 +1,5 @@
 package misc;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,6 +10,8 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.RecordScript;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -70,12 +69,12 @@ public class Test2017_0 {
 		
 		Plan plan = marmot.planBuilder("get_biz_grid")
 								.load(ADDR_BLD)
-								.filter(initExpr, "$codes.contains(건물용도코드)")
+								.filter(RecordScript.of(initExpr, "$codes.contains(건물용도코드)"))
 								.project("the_geom,건물관리번호")
 								.store(ADDR_BLD_UTILS)
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		DataSet result = marmot.createDataSet(ADDR_BLD_UTILS, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(ADDR_BLD_UTILS, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		result.cluster();
 		watch.stop();
 		

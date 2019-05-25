@@ -1,7 +1,5 @@
 package twitter;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.support.DateTimeFunctions.DateTimeToString;
 
 import java.time.LocalDateTime;
@@ -12,6 +10,8 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.RecordScript;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -61,14 +61,14 @@ public class FindByDateTime {
 								// 'INPUT' 디렉토리에 저장된 Tweet 로그 파일들을 읽는다.
 								.load(TWEETS)
 								// 2015.12.30 부터  2016.01.2 이전까지 레코드만을 뽑아서
-								.filter(initPred, betweenDTPred)
+								.filter(RecordScript.of(initPred, betweenDTPred))
 								// 레코드에서 'the_geom'과 'id' 컬럼만의 레코드를 만들어서
 								.project("the_geom,id,created_at")
 								// 'OUTPUT_LAYER'에 해당하는 레이어로 저장시킨다.
 								.store(RESULT)
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

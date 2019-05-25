@@ -1,7 +1,5 @@
 package misc;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -12,9 +10,10 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.SquareGrid;
-import marmot.plan.GeomOpOption;
+import marmot.plan.GeomOpOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -56,17 +55,17 @@ public class Test2017_1 {
 		Size2d cellSize = new Size2d(30, 30);
 		
 		Plan plan = marmot.planBuilder("get_biz_grid")
-								.loadSquareGridFile(new SquareGrid(ADDR_BLD, cellSize), -1)
+								.loadGrid(new SquareGrid(ADDR_BLD, cellSize), -1)
 								.centroid("the_geom")
 //								.aggregateJoin("the_geom", ADDR_BLD_UTILS_CLTS,
 //										SpatialRelation.WITHIN_DISTANCE(2000), COUNT())
-								.buffer("the_geom", 100, GeomOpOption.OUTPUT("center"))
+								.buffer("the_geom", 100, GeomOpOptions.create().outputColumn("center"))
 								.spatialAggregateJoin("center", ADDR_BLD_UTILS, COUNT())
 								.project("the_geom,cell_id,count")
 								.store(GRID)
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		DataSet result = marmot.createDataSet(GRID, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(GRID, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

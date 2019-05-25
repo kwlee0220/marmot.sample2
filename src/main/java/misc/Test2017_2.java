@@ -1,8 +1,5 @@
 package misc;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -11,10 +8,11 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
-import marmot.plan.GeomOpOption;
+import marmot.plan.GeomOpOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -57,8 +55,8 @@ public class Test2017_2 {
 		
 		Plan plan = marmot.planBuilder("get_biz_grid")
 								.load(ADDR_BLD_UTILS)
-								.buffer("the_geom", 100, GeomOpOption.OUTPUT("buffer"))
-								.assignSquareGridCell("buffer", new SquareGrid(bounds, cellSize))
+								.buffer("the_geom", 100, GeomOpOptions.create().outputColumn("buffer"))
+								.assignGridCell("buffer", new SquareGrid(bounds, cellSize), false)
 								.centroid("cell_geom")
 								.intersectsBinary("cell_geom", "the_geom")
 								.groupBy("cell_id")
@@ -68,7 +66,7 @@ public class Test2017_2 {
 								.store(GRID)
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		DataSet result = marmot.createDataSet(GRID, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(GRID, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

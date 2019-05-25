@@ -1,14 +1,12 @@
 package misc;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -65,7 +63,7 @@ public class TestETL2 {
 							.aggregate(AggregateFunction.COUNT())
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
@@ -74,13 +72,13 @@ public class TestETL2 {
 	}
 	
 	private static void bufferStations(PBMarmotClient marmot) {
-		GeometryColumnInfo info = marmot.getDataSet(STATIONS).getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = marmot.getDataSet(STATIONS).getGeometryColumnInfo();
 		Plan plan = marmot.planBuilder("buffer")
 						.load(STATIONS)
 						.buffer("the_geom", 100)
 						.store(PARAM)
 						.build();
-		DataSet result = marmot.createDataSet(PARAM, plan, GEOMETRY(info), FORCE);
+		DataSet result = marmot.createDataSet(PARAM, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		result.cluster();
 	}
 }
