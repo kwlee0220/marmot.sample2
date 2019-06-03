@@ -14,6 +14,7 @@ import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.SquareGrid;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -93,10 +94,9 @@ public class Y2T_2 {
 					.loadGrid(new SquareGrid(bounds, CELL_SIZE), NWORKERS)
 					.spatialOuterJoin("the_geom", TEMP_TAXI, "*,param.{hour,status}")
 					.expand("supply:int, demand:int", expr)
-					.groupBy("cell_id,hour")
-						.withTags("the_geom")
-						.aggregate(SUM("supply").as("supply_count"),
-									SUM("demand").as("demand_count"))
+					.aggregateByGroup(Group.ofKeys("cell_id,hour").withTags("the_geom"),
+										SUM("supply").as("supply_count"),
+										SUM("demand").as("demand_count"))
 					.store(RESULT)
 					.build();
 		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));

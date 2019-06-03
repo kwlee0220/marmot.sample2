@@ -8,6 +8,8 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -45,9 +47,9 @@ public class CalcSggHistogram {
 		Plan plan = marmot.planBuilder("calc_emd_histogram")
 								.loadSpatialIndexJoin(LEFT_DATASET, RIGHT_DATASET,
 											"left.{id},right.{the_geom,SIG_CD,SIG_KOR_NM}")
-								.groupBy("SIG_CD")
-									.withTags("the_geom,SIG_KOR_NM")
-									.count()
+								.aggregateByGroup(Group.ofKeys("SIG_CD")
+														.tags("the_geom,SIG_KOR_NM"),
+													AggregateFunction.COUNT())
 								.store(OUTPUT_DATASET)
 								.build();
 		

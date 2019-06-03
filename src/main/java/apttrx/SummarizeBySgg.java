@@ -13,6 +13,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -58,8 +59,8 @@ public class SummarizeBySgg {
 						.expand("평당거래액:int,sgg_cd:string",
 								"평당거래액 = (int)Math.round((거래금액*3.3) / 전용면적);"
 										+ "sgg_cd = info.getSggCode();")
-						.groupBy("sgg_cd")
-							.aggregate(COUNT().as("거래건수"),
+						.aggregateByGroup(Group.ofKeys("sgg_cd"), 
+										COUNT().as("거래건수"),
 										SUM("거래금액").as("총거래액"),
 										AVG("평당거래액").as("평당거래액"),
 										MAX("거래금액").as("최대거래액"),

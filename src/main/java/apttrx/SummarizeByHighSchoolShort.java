@@ -14,6 +14,7 @@ import marmot.RecordSchema;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.GeomOpOptions;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -75,9 +76,8 @@ public class SummarizeByHighSchoolShort {
 		plan = marmot.planBuilder("고등학교_주변_거래_집계")
 						.load(TEMP)
 						// 고등학교를 기준으로 그룹핑하여 집계한다.
-						.groupBy("id")
-							.withTags(geomCol + ",name")
-							.aggregate(SUM("trade_count").as("trade_count"),
+						.aggregateByGroup(Group.ofKeys("id").tags(geomCol + ",name"),
+										SUM("trade_count").as("trade_count"),
 										SUM("lease_count").as("lease_count"))
 						.defineColumn("count:long", "trade_count+lease_count")
 						.sort("count:D")
@@ -104,7 +104,7 @@ public class SummarizeByHighSchoolShort {
 					
 					// 고등학교 주변 1km 내의 아파트 검색.
 					.centroid(locGeomCol)
-					.buffer(locGeomCol, 1000, GeomOpOptions.create().outputColumn("circle"))
+					.buffer(locGeomCol, 1000, GeomOpOptions.OUTPUT("circle"))
 					.spatialJoin("circle", HIGH_SCHOOLS,
 								String.format("*-{%s},param.{%s,id,name}",
 											locGeomCol, schoolGeomCol))
@@ -114,9 +114,8 @@ public class SummarizeByHighSchoolShort {
 							"the_geom,id,name,param.*", null)
 					
 					// 고등학교를 기준으로 그룹핑하여 집계한다.
-					.groupBy("id")
-						.withTags(schoolGeomCol + ",name")
-						.aggregate(COUNT().as("trade_count"))
+					.aggregateByGroup(Group.ofKeys("id").tags(schoolGeomCol + ",name"),
+									COUNT().as("trade_count"))
 					.defineColumn("lease_count:long", "0")
 					.project("the_geom,id,name,trade_count,lease_count")
 					
@@ -136,7 +135,7 @@ public class SummarizeByHighSchoolShort {
 					
 					// 고등학교 주변 1km 내의 아파트 검색.
 					.centroid(locGeomCol)
-					.buffer(locGeomCol, 1000, GeomOpOptions.create().outputColumn("circle"))
+					.buffer(locGeomCol, 1000, GeomOpOptions.OUTPUT("circle"))
 					.spatialJoin("circle", HIGH_SCHOOLS,
 								String.format("*-{%s},param.{%s,id,name}",
 											locGeomCol, schoolGeomCol))
@@ -146,9 +145,8 @@ public class SummarizeByHighSchoolShort {
 							"the_geom,id,name,param.*", null)
 					
 					// 고등학교를 기준으로 그룹핑하여 집계한다.
-					.groupBy("id")
-						.withTags(schoolGeomCol + ",name")
-						.aggregate(COUNT().as("lease_count"))
+					.aggregateByGroup(Group.ofKeys("id").tags(schoolGeomCol + ",name"),
+										COUNT().as("lease_count"))
 					.defineColumn("trade_count:long", "0")
 					.project("the_geom,id,name,trade_count,lease_count")
 					

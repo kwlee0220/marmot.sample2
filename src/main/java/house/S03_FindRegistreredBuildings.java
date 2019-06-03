@@ -8,7 +8,6 @@ import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
-import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -57,7 +56,7 @@ public class S03_FindRegistreredBuildings {
 
 		Plan plan = marmot.planBuilder("총괄표제부 보유 건물 추출")
 						.load(buildings)
-						.arcGisSpatialJoin(geomCol, registry, true, SpatialJoinOptions.create())
+						.arcSpatialJoin(geomCol, registry, true, true)
 						.store(resultId)
 						.build();
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();

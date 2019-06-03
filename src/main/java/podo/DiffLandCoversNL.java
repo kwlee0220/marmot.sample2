@@ -8,6 +8,7 @@ import marmot.DataSet;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.plan.LoadOptions;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -55,9 +56,8 @@ public class DiffLandCoversNL {
 														.outputColumns("the_geom,param.분류구 as t1987,분류구 as t2007"))
 						.expand("area:double", "area = ST_Area(the_geom);")
 						.project("*-{the_geom}")
-						.groupBy("t1987,t2007")
-							.workerCount(1)
-							.aggregate(SUM("area").as("total_area"))
+						.aggregateByGroup(Group.ofKeys("t1987,t2007").workerCount(1),
+											SUM("area").as("total_area"))
 						.store(RESULT)
 						.build();
 		marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));

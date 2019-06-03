@@ -9,6 +9,7 @@ import marmot.DataSet;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -49,13 +50,11 @@ public class FindHotTaxiPlaces {
 							.spatialJoin("the_geom", EMD,
 										"car_no,status,ts,param.{the_geom, EMD_CD,EMD_KOR_NM}")
 							.defineColumn("hour:int", "ts.substring(8,10)")
-							.groupBy("hour,status,EMD_CD")
-								.withTags("EMD_KOR_NM,the_geom")
-								.aggregate(COUNT())
+							.aggregateByGroup(Group.ofKeys("hour,status,EMD_CD")
+													.withTags("EMD_KOR_NM,the_geom"),
+												COUNT())
 							.filter("count > 50")
-							.groupBy("hour,status")
-								.orderBy("count:D")
-								.list()
+							.listByGroup(Group.ofKeys("hour,status").orderBy("count:D"))
 							.store(RESULT)
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));

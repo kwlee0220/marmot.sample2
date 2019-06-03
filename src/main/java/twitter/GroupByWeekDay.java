@@ -5,6 +5,8 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -42,7 +44,8 @@ public class GroupByWeekDay {
 								.load(TWEETS)
 								.project("id,created_at")
 								.expand("week_day:int", "week_day = ST_DTWeekDay(created_at)")
-								.groupBy("week_day").count()
+								.aggregateByGroup(Group.ofKeys("week_day"),
+													AggregateFunction.COUNT())
 								.drop(0)
 								.store(RESULT)
 								.build();

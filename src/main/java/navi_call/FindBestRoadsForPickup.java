@@ -16,6 +16,7 @@ import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.externio.shp.ExportRecordSetAsShapefile;
 import marmot.externio.shp.ShapefileParameters;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -58,15 +59,11 @@ public class FindBestRoadsForPickup {
 					.load(INPUT)
 					.filter("status == 0")
 					.defineColumn("hour:int", "ts.substring(8,10)")
-					.groupBy("hour,link_id,sub_link_no")
-						.withTags("link_geom")
-						.aggregate(COUNT())
+					.aggregateByGroup(Group.ofKeys("hour,link_id,sub_link_no")
+											.withTags("link_geom"), COUNT())
 					.project("link_geom as the_geom,*-{link_geom}")
 					.filter("count >= 50")
-					.groupBy("hour")
-						.withTags("the_geom")
-						.orderBy("count:D")
-						.list()
+					.listByGroup(Group.ofKeys("hour").tags("the_geom").orderBy("count:D"))
 					.store(RESULT)
 					.build();
 

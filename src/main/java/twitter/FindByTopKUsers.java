@@ -1,5 +1,7 @@
 package twitter;
 
+import static marmot.optor.AggregateFunction.COUNT;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +16,7 @@ import marmot.RecordSet;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -75,7 +78,7 @@ public class FindByTopKUsers {
 		// 가장 자주 tweet을 한 사용자 식별자들을 저장할 임시 파일 이름을 생성한다.
 		Plan plan = marmot.planBuilder("list_topk_users")
 								.load(TWEETS)
-								.groupBy("user_id").aggregate(AggregateFunction.COUNT())
+								.aggregateByGroup(Group.ofKeys("user_id"), COUNT())
 								.pickTopK("count:D", 5)
 								.build();
 		try ( RecordSet rset = marmot.executeToRecordSet(plan) ) {

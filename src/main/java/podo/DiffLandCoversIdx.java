@@ -8,6 +8,7 @@ import marmot.DataSet;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -53,9 +54,8 @@ public class DiffLandCoversIdx {
 						.expand("area:double", "area = ST_Area(the_geom);"
 								+ "t2007 = (t2007.length() > 0) ? t2007 : t2007_2")
 						.project("*-{the_geom,t2007_2}")
-						.groupBy("t1987,t2007")
-							.workerCount(1)
-							.aggregate(SUM("area").as("total_area"))
+						.aggregateByGroup(Group.ofKeys("t1987,t2007").workerCount(1),
+											SUM("area").as("total_area"))
 						.expand("total_area:long", "total_area = Math.round(total_area)")
 						.store(RESULT)
 						.build();

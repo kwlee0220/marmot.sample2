@@ -12,6 +12,7 @@ import marmot.RecordSet;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.GeomOpOptions;
+import marmot.plan.Group;
 import marmot.process.geo.EstimateClusterQuadKeysParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import navi_call.Globals;
@@ -72,12 +73,10 @@ public class S1_MapMatchingTaxiLog2 {
 		Plan plan;
 		plan = marmot.planBuilder("택시로그_맵_매핑")
 					.load(INPUT)
-					.buffer(geomCol, Globals.DISTANCE, GeomOpOptions.create().outputColumn("buffer"))
+					.buffer(geomCol, Globals.DISTANCE, GeomOpOptions.OUTPUT("buffer"))
 					.attachQuadKey("buffer", "EPSG:5186", quadKeys, true, true)
 					.project("*-{buffer,__quad_key,__mbr}, __quad_key as quad_key")
-					.groupBy("quad_key")
-						.workerCount(nreducers)
-						.list()
+					.listByGroup(Group.ofKeys("quad_key").workerCount(nreducers))
 					.project("*-{quad_key}")
 					.knnJoin(geomCol, Globals.ROADS_IDX, 1, Globals.DISTANCE,
 							"*,param.{the_geom as link_geom, link_id, sub_link_no}")

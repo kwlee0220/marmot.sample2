@@ -1,5 +1,7 @@
 package misc;
 
+import static marmot.optor.AggregateFunction.COUNT;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -10,9 +12,9 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
 import marmot.plan.GeomOpOptions;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -55,13 +57,11 @@ public class Test2017_2 {
 		
 		Plan plan = marmot.planBuilder("get_biz_grid")
 								.load(ADDR_BLD_UTILS)
-								.buffer("the_geom", 100, GeomOpOptions.create().outputColumn("buffer"))
+								.buffer("the_geom", 100, GeomOpOptions.OUTPUT("buffer"))
 								.assignGridCell("buffer", new SquareGrid(bounds, cellSize), false)
 								.centroid("cell_geom")
 								.intersectsBinary("cell_geom", "the_geom")
-								.groupBy("cell_id")
-									.withTags("cell_geom")
-									.aggregate(AggregateFunction.COUNT())
+								.aggregateByGroup(Group.ofKeys("cell_id").tags("cell_geom"), COUNT())
 								.project("cell_geom as the_geom,*-{cell_geom}")
 								.store(GRID)
 								.build();

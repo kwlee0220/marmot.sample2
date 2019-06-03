@@ -1,5 +1,7 @@
 package misc;
 
+import static marmot.optor.AggregateFunction.COUNT;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -8,7 +10,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -59,8 +61,7 @@ public class TestETL2 {
 		Plan plan = marmot.planBuilder("test_dtg")
 						.load(INPUT)
 						.spatialJoin("the_geom", PARAM, "the_geom,param.sub_sta_sn")
-						.groupBy("sub_sta_sn")
-							.aggregate(AggregateFunction.COUNT())
+						.aggregateByGroup(Group.ofKeys("sub_sta_sn"), COUNT())
 						.store(RESULT)
 						.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));

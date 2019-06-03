@@ -22,6 +22,7 @@ import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -152,9 +153,7 @@ public class Y2T_1_2 {
 		
 		plan = marmot.planBuilder("analysis")
 					.load(TEMP_JOINED)
-					.groupBy("tot_oa_cd")
-						.withTags("param_geom")
-						.aggregate(aggrFuncList)
+					.aggregateByGroup(Group.ofKeys("tot_oa_cd").withTags("param_geom"), aggrFuncList)
 					.project("param_geom as the_geom, *-{param_geom}")
 					.store(RESULT)
 					.build();

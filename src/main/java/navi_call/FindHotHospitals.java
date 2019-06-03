@@ -9,6 +9,7 @@ import marmot.DataSet;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -53,9 +54,8 @@ public class FindHotHospitals {
 												.outputColumns("param.{the_geom,gid,bplc_nm,bz_stt_nm}")
 												.withinDistance(50))
 								.filter("bz_stt_nm=='운영중'")
-								.groupBy("gid")
-									.withTags("the_geom,bplc_nm")
-									.aggregate(COUNT())
+								.aggregateByGroup(Group.ofKeys("gid").withTags("the_geom,bplc_nm"),
+												COUNT())
 								.rank("count:D", "rank")
 								.store(RESULT)
 								.build();

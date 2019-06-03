@@ -1,6 +1,6 @@
 package podo;
 
-import static marmot.optor.AggregateFunction.GEOM_UNION;
+import static marmot.optor.AggregateFunction.UNION_GEOM;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +14,7 @@ import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.externio.geojson.GeoJsonRecordSetWriter;
+import marmot.plan.Group;
 import marmot.plan.LoadOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -81,10 +82,10 @@ public class Process {
 		Plan plan = marmot.planBuilder("토지피복_변화량")
 						.loadSpatialIndexJoin(OUTPUT_1987_S, OUTPUT_2007_S, colExpr)
 						.intersection("the_geom", "g2", "the_geom")
-						.groupBy("uid1987,uid2007")
-							.withTags("c1987,c2007")
-							.workerCount(1)
-							.aggregate(GEOM_UNION("the_geom").as("the_geom"))
+						.aggregateByGroup(Group.ofKeys("uid1987,uid2007")
+												.tags("c1987,c2007")
+												.workerCount(1),
+											UNION_GEOM("the_geom").as("the_geom"))
 						.project("the_geom,c1987,c2007")
 						.store(RESULT)
 						.build();
