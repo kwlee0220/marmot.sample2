@@ -10,8 +10,6 @@ import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.LoadOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.CommandLine;
-import utils.CommandLineParser;
 import utils.StopWatch;
 
 /**
@@ -25,21 +23,11 @@ public class S03_FindRegistreredBuildingsFixed {
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
-		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
-		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
-		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
-		
-		CommandLine cl = parser.parseArgs(args);
-		if ( cl.hasOption("help") ) {
-			cl.exitWithUsage(0);
-		}
 
-		String host = MarmotClientCommands.getMarmotHost(cl);
-		int port = MarmotClientCommands.getMarmotPort(cl);
-		
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
+		PBMarmotClient marmot = MarmotClientCommands.connect();
+		
+		StopWatch watch = StopWatch.start();
 		
 		// 전국 건물 중에서 총괄표제부 보유한 건물 추출
 		process(marmot, BUILDINGS, REGISTRY, RESULT);
@@ -56,7 +44,7 @@ public class S03_FindRegistreredBuildingsFixed {
 		String geomCol = input.getGeometryColumn();
 
 		Plan plan = marmot.planBuilder("총괄표제부 보유 건물 추출")
-						.load(registry, LoadOptions.create().splitCount(8))
+						.load(registry, LoadOptions.SPLIT_COUNT(8))
 						.knnJoin(geomCol, buildings, 10, 1, "param.*")
 						.store(result)
 						.build();

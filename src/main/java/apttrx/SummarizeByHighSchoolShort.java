@@ -13,11 +13,10 @@ import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.optor.JoinOptions;
 import marmot.plan.GeomOpOptions;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.CommandLine;
-import utils.CommandLineParser;
 import utils.StopWatch;
 
 /**
@@ -35,23 +34,11 @@ public class SummarizeByHighSchoolShort {
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
-		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
-		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
-		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
-		
-		CommandLine cl = parser.parseArgs(args);
-		if ( cl.hasOption("help") ) {
-			cl.exitWithUsage(0);
-		}
 
-		String host = MarmotClientCommands.getMarmotHost(cl);
-		int port = MarmotClientCommands.getMarmotPort(cl);
+		// 원격 MarmotServer에 접속.
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		StopWatch watch = StopWatch.start();
-		
-		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		Plan plan;
 		
@@ -111,7 +98,7 @@ public class SummarizeByHighSchoolShort {
 					
 					// 고등학교 1km내 위치에 해당하는 아파트 거래 정보를 검색.
 					.hashJoin("시군구,번지,단지명", APT_TRADE_TRX, "시군구,번지,단지명",
-							"the_geom,id,name,param.*", null)
+							"the_geom,id,name,param.*", JoinOptions.INNER_JOIN())
 					
 					// 고등학교를 기준으로 그룹핑하여 집계한다.
 					.aggregateByGroup(Group.ofKeys("id").tags(schoolGeomCol + ",name"),
@@ -142,7 +129,7 @@ public class SummarizeByHighSchoolShort {
 					
 					// 고등학교 1km내 위치에 해당하는 아파트 거래 정보를 검색.
 					.hashJoin("시군구,번지,단지명", APT_LEASE_TRX, "시군구,번지,단지명",
-							"the_geom,id,name,param.*", null)
+							"the_geom,id,name,param.*", JoinOptions.INNER_JOIN())
 					
 					// 고등학교를 기준으로 그룹핑하여 집계한다.
 					.aggregateByGroup(Group.ofKeys("id").tags(schoolGeomCol + ",name"),

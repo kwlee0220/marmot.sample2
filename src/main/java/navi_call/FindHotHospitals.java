@@ -50,9 +50,8 @@ public class FindHotHospitals {
 								.load(TAXI_LOG)
 								.filter("status==1 || status==2")
 								.spatialJoin("the_geom", HOSPITAL,
-											SpatialJoinOptions.create()
-												.outputColumns("param.{the_geom,gid,bplc_nm,bz_stt_nm}")
-												.withinDistance(50))
+											SpatialJoinOptions.WITHIN_DISTANCE(50)
+															.outputColumns("param.{the_geom,gid,bplc_nm,bz_stt_nm}"))
 								.filter("bz_stt_nm=='운영중'")
 								.aggregateByGroup(Group.ofKeys("gid").withTags("the_geom,bplc_nm"),
 												COUNT())

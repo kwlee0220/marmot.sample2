@@ -75,7 +75,7 @@ public class Y3T_1 {
 		plan = marmot.planBuilder("")
 					.load(POPULATION)
 					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES,
-										SpatialJoinOptions.create().negated(true))
+										SpatialJoinOptions.NEGATED)
 					.project(geomCol + ",refl70,point_x,point_y")
 					.store(TEMP_POP)
 					.build();

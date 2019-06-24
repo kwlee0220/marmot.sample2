@@ -1,7 +1,6 @@
 package appls;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
+import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -12,9 +11,8 @@ import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.CommandLine;
-import utils.CommandLineParser;
 import utils.StopWatch;
 
 /**
@@ -29,25 +27,12 @@ public class FilterInSeoul {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-//		PropertyConfigurator.configure("log4j.properties");
-		LogManager.getRootLogger().setLevel(Level.OFF);
-		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
-		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
-		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
-		
-		CommandLine cl = parser.parseArgs(args);
-		if ( cl.hasOption("help") ) {
-			cl.exitWithUsage(0);
-		}
+		PropertyConfigurator.configure("log4j.properties");
 
-		String host = MarmotClientCommands.getMarmotHost(cl);
-		int port = MarmotClientCommands.getMarmotPort(cl);
+		// 원격 MarmotServer에 접속.
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		StopWatch watch = StopWatch.start();
-		
-		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
 		DataSet result;
@@ -63,7 +48,8 @@ public class FilterInSeoul {
 		plan = marmot.planBuilder("tag_geom")
 					.load(LAND_USAGE)
 					.filter("법정동코드.startsWith('11')")
-					.hashJoin("고유번호", CADASTRAL_SEOUL, "pnu", "*,param.the_geom", null)
+					.hashJoin("고유번호", CADASTRAL_SEOUL, "pnu", "*,param.the_geom",
+								JoinOptions.INNER_JOIN())
 					.project("the_geom, 고유번호 as pnu, 용도지역지구코드 as code, 용도지역지구명 as name")
 					.store(RESULT)
 					.build();

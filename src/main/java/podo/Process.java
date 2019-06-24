@@ -122,7 +122,7 @@ public class Process {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan = marmot.planBuilder(inputDsId + "_분할")
-							.load(inputDsId, LoadOptions.create().splitCount(16))
+							.load(inputDsId, LoadOptions.SPLIT_COUNT(16))
 							.project("the_geom, 분류구분 as cover")
 							.assignUid("uid")
 							.splitGeometry(gcInfo.name())

@@ -10,8 +10,6 @@ import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.CommandLine;
-import utils.CommandLineParser;
 import utils.StopWatch;
 
 /**
@@ -31,26 +29,11 @@ public class TestETL1 {
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
-		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
-		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
-		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
-		
-		CommandLine cl = parser.parseArgs(args);
-		if ( cl.hasOption("help") ) {
-			cl.exitWithUsage(0);
-		}
-		
-		INPUT = args[0];
 
-		String host = MarmotClientCommands.getMarmotHost(cl);
-		int port = MarmotClientCommands.getMarmotPort(cl);
-		System.out.println("dataset=" + INPUT);
+		// 원격 MarmotServer에 접속.
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		StopWatch watch = StopWatch.start();
-		
-		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		Plan plan = marmot.planBuilder("test_dtg1")

@@ -144,8 +144,7 @@ public class Y2T_1_2 {
 					
 //					.buildSpatialHistogram(geomCol, MULTI_RINGS, valueColNames)
 					.intersectionJoin(geomCol, COLLECT,
-									SpatialJoinOptions.create()
-													.outputColumns("*,param.tot_oa_cd,param.the_geom as param_geom"))
+									SpatialJoinOptions.OUTPUT("*,param.tot_oa_cd,param.the_geom as param_geom"))
 					.expand("ratio:double", expr)
 					.store(TEMP_JOINED)
 					.build();

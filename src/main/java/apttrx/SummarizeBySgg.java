@@ -13,10 +13,9 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.optor.JoinOptions;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.CommandLine;
-import utils.CommandLineParser;
 import utils.StopWatch;
 
 /**
@@ -31,23 +30,11 @@ public class SummarizeBySgg {
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
-		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
-		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
-		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
-		
-		CommandLine cl = parser.parseArgs(args);
-		if ( cl.hasOption("help") ) {
-			cl.exitWithUsage(0);
-		}
 
-		String host = MarmotClientCommands.getMarmotHost(cl);
-		int port = MarmotClientCommands.getMarmotPort(cl);
+		// 원격 MarmotServer에 접속.
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		StopWatch watch = StopWatch.start();
-		
-		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		Plan plan;
 		DataSet emd = marmot.getDataSet(SGG);
@@ -55,7 +42,8 @@ public class SummarizeBySgg {
 		
 		plan = marmot.planBuilder("summarize_by_station")
 						.load(APT_TRX)
-						.hashJoin("시군구,번지,단지명", APT_LOC, "시군구,번지,단지명", "*,param.{info}", null)
+						.hashJoin("시군구,번지,단지명", APT_LOC,
+								"시군구,번지,단지명", "*,param.{info}", JoinOptions.INNER_JOIN())
 						.expand("평당거래액:int,sgg_cd:string",
 								"평당거래액 = (int)Math.round((거래금액*3.3) / 전용면적);"
 										+ "sgg_cd = info.getSggCode();")
@@ -68,7 +56,8 @@ public class SummarizeBySgg {
 						.defineColumn("평당거래액:int")
 						
 						.hashJoin("sgg_cd", SGG, "sig_cd",
-								String.format("*,param.{%s,sig_kor_nm}", geomCol), null)
+									String.format("*,param.{%s,sig_kor_nm}", geomCol),
+									JoinOptions.INNER_JOIN())
 						.sort("거래건수:D")
 						
 						.store(RESULT)
