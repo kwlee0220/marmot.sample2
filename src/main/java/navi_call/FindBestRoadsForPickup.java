@@ -1,5 +1,6 @@
 package navi_call;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
 
 import java.io.IOException;
@@ -12,7 +13,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSet;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.externio.shp.ExportRecordSetAsShapefile;
 import marmot.externio.shp.ShapefileParameters;
@@ -67,7 +67,7 @@ public class FindBestRoadsForPickup {
 					.store(RESULT)
 					.build();
 
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 10);

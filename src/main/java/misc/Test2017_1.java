@@ -1,5 +1,6 @@
 package misc;
 
+import static marmot.StoreDataSetOptions.*;
 import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -51,7 +52,7 @@ public class Test2017_1 {
 								.store(GRID)
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		DataSet result = marmot.createDataSet(GRID, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(GRID, plan, FORCE(gcInfo));
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

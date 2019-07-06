@@ -1,5 +1,6 @@
 package apttrx;
 
+import static marmot.StoreDataSetOptions.*;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
 
@@ -56,7 +57,7 @@ public class SummarizeByHighSchoolShort {
 		Plan plan1 = countTradeTransaction(marmot);
 		Plan plan2 = countLeaseTransaction(marmot);
 
-		marmot.createDataSet(TEMP, plan1, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		marmot.createDataSet(TEMP, plan1, FORCE(gcInfo));
 		marmot.execute(plan2);
 		System.out.println("done: 아파트 거래 정보 지오코딩, elapsed=" + watch.getElapsedMillisString());
 		
@@ -70,7 +71,7 @@ public class SummarizeByHighSchoolShort {
 						.sort("count:D")
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan1, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan1, FORCE(gcInfo));
 		watch.stop();
 		
 		marmot.deleteDataSet(TEMP);
@@ -98,7 +99,7 @@ public class SummarizeByHighSchoolShort {
 					
 					// 고등학교 1km내 위치에 해당하는 아파트 거래 정보를 검색.
 					.hashJoin("시군구,번지,단지명", APT_TRADE_TRX, "시군구,번지,단지명",
-							"the_geom,id,name,param.*", JoinOptions.INNER_JOIN())
+							"the_geom,id,name,param.*", JoinOptions.INNER_JOIN)
 					
 					// 고등학교를 기준으로 그룹핑하여 집계한다.
 					.aggregateByGroup(Group.ofKeys("id").tags(schoolGeomCol + ",name"),
@@ -129,7 +130,7 @@ public class SummarizeByHighSchoolShort {
 					
 					// 고등학교 1km내 위치에 해당하는 아파트 거래 정보를 검색.
 					.hashJoin("시군구,번지,단지명", APT_LEASE_TRX, "시군구,번지,단지명",
-							"the_geom,id,name,param.*", JoinOptions.INNER_JOIN())
+							"the_geom,id,name,param.*", JoinOptions.INNER_JOIN)
 					
 					// 고등학교를 기준으로 그룹핑하여 집계한다.
 					.aggregateByGroup(Group.ofKeys("id").tags(schoolGeomCol + ",name"),
@@ -150,7 +151,7 @@ public class SummarizeByHighSchoolShort {
 							.store(HIGH_SCHOOLS)
 							.build();
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, plan, FORCE(gcInfo));
 		
 		return result;
 	}

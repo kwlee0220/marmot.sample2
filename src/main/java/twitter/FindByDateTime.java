@@ -1,5 +1,6 @@
 package twitter;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.support.DateTimeFunctions.DateTimeToString;
 
 import java.time.LocalDateTime;
@@ -11,7 +12,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordScript;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -68,7 +68,7 @@ public class FindByDateTime {
 								.store(RESULT)
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

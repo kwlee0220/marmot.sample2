@@ -1,5 +1,7 @@
 package navi_call;
 
+import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.WITHIN_DISTANCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -10,7 +12,6 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -57,7 +58,7 @@ public class FindPassingStation {
 							.store(OUTPUT)
 							.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
-		DataSet result = marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
 		
 		SampleUtils.printPrefix(result, 5);
 		
@@ -75,7 +76,7 @@ public class FindPassingStation {
 							.project("the_geom")
 							.build();
 		return marmot.executeLocally(plan)
-						.stream()
+						.fstream()
 						.map(rec -> rec.getGeometry(0))
 						.findFirst().getOrNull();
 	}

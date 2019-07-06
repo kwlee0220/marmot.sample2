@@ -1,5 +1,6 @@
 package twitter;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
 
 import java.util.List;
@@ -13,9 +14,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordScript;
 import marmot.RecordSet;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.AggregateFunction;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -66,7 +65,7 @@ public class FindByTopKUsers {
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom",
 															info.getGeometryColumnInfo().srid());
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
@@ -82,7 +81,7 @@ public class FindByTopKUsers {
 								.pickTopK("count:D", 5)
 								.build();
 		try ( RecordSet rset = marmot.executeToRecordSet(plan) ) {
-			return rset.stream().map(r -> r.getString("user_id")).toList();
+			return rset.fstream().map(r -> r.getString("user_id")).toList();
 		}
 	}
 }

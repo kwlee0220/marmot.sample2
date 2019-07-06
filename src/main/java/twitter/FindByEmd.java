@@ -1,5 +1,8 @@
 package twitter;
 
+import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -9,7 +12,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -64,7 +66,7 @@ public class FindByEmd {
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom",
 															info.getGeometryColumnInfo().srid());
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
@@ -86,7 +88,7 @@ public class FindByEmd {
 								.build();
 		// 프로그램 수행으로 생성된 임시 레이어를 읽어 강남구 영역을 읽는다.
 		return marmot.executeLocally(plan)
-						.stream()
+						.fstream()
 						.findFirst().get()
 						.getGeometry(0);
 	}

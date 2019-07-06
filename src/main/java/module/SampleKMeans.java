@@ -59,7 +59,7 @@ public class SampleKMeans {
 								.project("the_geom")
 								.centroid("the_geom")
 								.build();
-		return marmot.executeLocally(plan).stream()
+		return marmot.executeLocally(plan).fstream()
 					.map(r -> (Point)r.getGeometry(0))
 					.toList();
 	}

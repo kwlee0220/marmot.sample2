@@ -1,5 +1,6 @@
 package podo;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.UNION_GEOM;
 
 import java.io.File;
@@ -11,7 +12,6 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.externio.geojson.GeoJsonRecordSetWriter;
 import marmot.plan.Group;
@@ -90,7 +90,7 @@ public class Process {
 						.store(RESULT)
 						.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		return result;
@@ -129,7 +129,7 @@ public class Process {
 							.drop(0)
 							.store(outputDsId)
 							.build();
-		DataSet result = marmot.createDataSet(outputDsId, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(outputDsId, plan, FORCE(gcInfo));
 		
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}

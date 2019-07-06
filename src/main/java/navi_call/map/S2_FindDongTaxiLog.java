@@ -1,5 +1,6 @@
 package navi_call.map;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -10,7 +11,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import navi_call.Globals;
@@ -58,7 +58,7 @@ public class S2_FindDongTaxiLog {
 					.store(RESULT)
 					.build();
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		watch.stop();
 
 		System.out.printf("count=%d elapsed=%s%n", result.getRecordCount(),
@@ -74,7 +74,7 @@ public class S2_FindDongTaxiLog {
 							.project("the_geom")
 							.build();
 		return marmot.executeLocally(plan)
-						.stream()
+						.fstream()
 						.map(rec -> rec.getGeometry(0))
 						.findFirst()
 						.getOrNull();

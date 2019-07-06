@@ -1,5 +1,6 @@
 package yunsei;
 
+import static marmot.StoreDataSetOptions.*;
 import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.Level;
@@ -79,7 +80,7 @@ public class Y2T_2 {
 					.store(TEMP_TAXI)
 					.build();
 
-		result = marmot.createDataSet(TEMP_TAXI, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		result = marmot.createDataSet(TEMP_TAXI, plan, FORCE(gcInfo));
 		System.out.println("done: 택시 승하차 로그 선택, elapsed=" + watch.getElapsedMillisString());
 		result.cluster();
 		System.out.println("done: 승하차 로그 클러스터링, elapsed=" + watch.getElapsedMillisString());
@@ -99,21 +100,21 @@ public class Y2T_2 {
 										SUM("demand").as("demand_count"))
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		
 		plan = marmot.planBuilder("새벽_01시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 1")
 					.store(RESULT01)
 					.build();
-		result = marmot.createDataSet(RESULT01, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		result = marmot.createDataSet(RESULT01, plan, FORCE(gcInfo));
 		
 		plan = marmot.planBuilder("새벽_03시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 3")
 					.store(RESULT03)
 					.build();
-		result = marmot.createDataSet(RESULT03, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		result = marmot.createDataSet(RESULT03, plan, FORCE(gcInfo));
 		
 		System.out.println("done, elapsed=" + watch.stopAndGetElpasedTimeString());
 		

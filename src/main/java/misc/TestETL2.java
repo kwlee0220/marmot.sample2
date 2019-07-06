@@ -1,5 +1,6 @@
 package misc;
 
+import static marmot.StoreDataSetOptions.*;
 import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -50,7 +51,7 @@ public class TestETL2 {
 						.aggregateByGroup(Group.ofKeys("sub_sta_sn"), COUNT())
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
@@ -65,7 +66,7 @@ public class TestETL2 {
 						.buffer("the_geom", 100)
 						.store(PARAM)
 						.build();
-		DataSet result = marmot.createDataSet(PARAM, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(PARAM, plan, FORCE(gcInfo));
 		result.cluster();
 	}
 }

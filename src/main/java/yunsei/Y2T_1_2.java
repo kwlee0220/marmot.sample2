@@ -1,5 +1,6 @@
 package yunsei;
 
+import static marmot.StoreDataSetOptions.*;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.Arrays;
@@ -89,7 +90,7 @@ public class Y2T_1_2 {
 					.filterSpatially(geomCol, INTERSECTS, seoul)
 					.store(TEMP_BUS_SEOUL)
 					.build();
-		result = marmot.createDataSet(TEMP_BUS_SEOUL, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		result = marmot.createDataSet(TEMP_BUS_SEOUL, plan, FORCE(gcInfo));
 		watch.stop();
 		
 		DataSet buffereds = null;
@@ -109,7 +110,7 @@ public class Y2T_1_2 {
 						.store(MULTI_RINGS)
 						.build();
 			if ( buffereds == null ) {
-				buffereds = marmot.createDataSet(MULTI_RINGS, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+				buffereds = marmot.createDataSet(MULTI_RINGS, plan, FORCE(gcInfo));
 			}
 			else {
 				marmot.execute(plan);
@@ -148,7 +149,7 @@ public class Y2T_1_2 {
 					.expand("ratio:double", expr)
 					.store(TEMP_JOINED)
 					.build();
-		marmot.createDataSet(TEMP_JOINED, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		marmot.createDataSet(TEMP_JOINED, plan, FORCE(gcInfo));
 		
 		plan = marmot.planBuilder("analysis")
 					.load(TEMP_JOINED)
@@ -156,7 +157,7 @@ public class Y2T_1_2 {
 					.project("param_geom as the_geom, *-{param_geom}")
 					.store(RESULT)
 					.build();
-		marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		
 //		ClusterWithKMeansParameters params = new ClusterWithKMeansParameters();
 //		params.dataset(INPUT);

@@ -43,7 +43,7 @@ public class TestETL1 {
 //						.expand("the_geom:polygon", "the_geom = ST_GeomFromEnvelope(mbr)")
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

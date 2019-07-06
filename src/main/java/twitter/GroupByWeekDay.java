@@ -49,7 +49,7 @@ public class GroupByWeekDay {
 								.drop(0)
 								.store(RESULT)
 								.build();
-		marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		
 		watch.stop();
 		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());

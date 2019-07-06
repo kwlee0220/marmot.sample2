@@ -45,7 +45,7 @@ public class FindLastestLandUsage {
 					.sort("등록일자:D")
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

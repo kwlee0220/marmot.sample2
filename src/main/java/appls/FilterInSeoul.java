@@ -1,5 +1,8 @@
 package appls;
 
+import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -49,11 +52,11 @@ public class FilterInSeoul {
 					.load(LAND_USAGE)
 					.filter("법정동코드.startsWith('11')")
 					.hashJoin("고유번호", CADASTRAL_SEOUL, "pnu", "*,param.the_geom",
-								JoinOptions.INNER_JOIN())
+								JoinOptions.INNER_JOIN)
 					.project("the_geom, 고유번호 as pnu, 용도지역지구코드 as code, 용도지역지구명 as name")
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);
@@ -85,6 +88,6 @@ public class FilterInSeoul {
 					.store(output)
 					.build();
 		GeometryColumnInfo gcInfo = taxi.getGeometryColumnInfo();
-		marmot.createDataSet(output, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		marmot.createDataSet(output, plan, FORCE(gcInfo));
 	}
 }

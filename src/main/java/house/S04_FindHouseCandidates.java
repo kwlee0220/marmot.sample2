@@ -1,12 +1,13 @@
 package house;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -48,7 +49,7 @@ public class S04_FindHouseCandidates {
 						.store(result)
 						.build();
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		DataSet ds = marmot.createDataSet(result, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet ds = marmot.createDataSet(result, plan, FORCE(gcInfo));
 
 		elapsed.stop();
 		System.out.printf("총괄표제부 건물영역 제외 주거지적 영역 추출 완료, "

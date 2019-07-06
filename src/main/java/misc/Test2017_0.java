@@ -1,5 +1,6 @@
 package misc;
 
+import static marmot.StoreDataSetOptions.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,7 +61,7 @@ public class Test2017_0 {
 								.store(ADDR_BLD_UTILS)
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		DataSet result = marmot.createDataSet(ADDR_BLD_UTILS, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(ADDR_BLD_UTILS, plan, FORCE(gcInfo));
 		result.cluster();
 		watch.stop();
 		

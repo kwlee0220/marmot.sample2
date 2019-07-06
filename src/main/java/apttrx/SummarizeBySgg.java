@@ -1,5 +1,6 @@
 package apttrx;
 
+import static marmot.StoreDataSetOptions.*;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.MAX;
@@ -43,7 +44,7 @@ public class SummarizeBySgg {
 		plan = marmot.planBuilder("summarize_by_station")
 						.load(APT_TRX)
 						.hashJoin("시군구,번지,단지명", APT_LOC,
-								"시군구,번지,단지명", "*,param.{info}", JoinOptions.INNER_JOIN())
+								"시군구,번지,단지명", "*,param.{info}", JoinOptions.INNER_JOIN)
 						.expand("평당거래액:int,sgg_cd:string",
 								"평당거래액 = (int)Math.round((거래금액*3.3) / 전용면적);"
 										+ "sgg_cd = info.getSggCode();")
@@ -57,13 +58,13 @@ public class SummarizeBySgg {
 						
 						.hashJoin("sgg_cd", SGG, "sig_cd",
 									String.format("*,param.{%s,sig_kor_nm}", geomCol),
-									JoinOptions.INNER_JOIN())
+									JoinOptions.INNER_JOIN)
 						.sort("거래건수:D")
 						
 						.store(RESULT)
 						.build();
 		GeometryColumnInfo gcInfo = emd.getGeometryColumnInfo();
-		marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		watch.stop();
 		
 		System.out.printf("elapsed: %s%n", watch.getElapsedMillisString());

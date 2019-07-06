@@ -59,7 +59,7 @@ public class DiffLandCoversNL {
 											SUM("area").as("total_area"))
 						.store(RESULT)
 						.build();
-		marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		
 		watch.stop();
 		System.out.println("완료: 토지피복도 교차조인");

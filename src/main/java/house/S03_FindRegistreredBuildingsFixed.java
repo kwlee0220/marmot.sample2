@@ -1,12 +1,13 @@
 package house;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.LoadOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -49,7 +50,7 @@ public class S03_FindRegistreredBuildingsFixed {
 						.store(result)
 						.build();
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		DataSet ds = marmot.createDataSet(result, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet ds = marmot.createDataSet(result, plan, FORCE(gcInfo));
 		ds.cluster();
 		elapsed.stop();
 		

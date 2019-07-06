@@ -1,12 +1,14 @@
 package twitter;
 
+import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -57,7 +59,7 @@ public class ImportTweets {
 
 		// MarmotServer에 생성한 프로그램을 전송하여 수행시킨다.
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
-		DataSet result = marmot.createDataSet(OUTPUT_DATASET, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(OUTPUT_DATASET, plan, FORCE(gcInfo));
 		result.cluster();
 		watch.stop();
 		

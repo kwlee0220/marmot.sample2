@@ -1,5 +1,7 @@
 package navi_call.map;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import java.util.List;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -9,7 +11,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSet;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.GeomOpOptions;
 import marmot.plan.Group;
@@ -63,7 +64,7 @@ public class S1_MapMatchingTaxiLog2 {
 		
 		List<String> quadKeys;
 		try ( RecordSet rset = marmot.getDataSet(QUAD_KEY_FILE).read() ) {
-			quadKeys = rset.stream().map(r -> r.getString(0)).toList();
+			quadKeys = rset.fstream().map(r -> r.getString(0)).toList();
 		}
 		finally {
 //			marmot.deleteDataSet(QUAD_KEY_FILE);
@@ -82,7 +83,7 @@ public class S1_MapMatchingTaxiLog2 {
 							"*,param.{the_geom as link_geom, link_id, sub_link_no}")
 					.store("tmp/result")
 					.build();
-		DataSet result = marmot.createDataSet("tmp/result", plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet("tmp/result", plan, FORCE(gcInfo));
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 10);

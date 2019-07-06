@@ -1,12 +1,13 @@
 package house;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -95,7 +96,7 @@ public class S02_FindHouseCadastral {
 						.store(result)
 						.build();
 		GeometryColumnInfo gcInfo = left.getGeometryColumnInfo();
-		DataSet ds = marmot.createDataSet(result, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet ds = marmot.createDataSet(result, plan, FORCE(gcInfo));
 
 		elapsed.stop();
 		System.out.printf("전국 지적도에서 주거지적 추출 완료, count=%d elapsed=%s%n",

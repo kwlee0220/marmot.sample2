@@ -57,7 +57,7 @@ public class FindHotTaxiPlaces {
 							.listByGroup(Group.ofKeys("hour,status").orderBy("count:D"))
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 50);
