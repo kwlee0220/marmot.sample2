@@ -15,7 +15,7 @@ import marmot.Plan;
 import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.externio.shp.ExportRecordSetAsShapefile;
-import marmot.externio.shp.ShapefileParameters;
+import marmot.externio.shp.ExportShapefileParameters;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -88,7 +88,7 @@ public class FindBestRoadsForPickup {
 		RecordSet rset = marmot.executeLocally(plan);
 
 		String file = String.format("/home/kwlee/tmp/%s_%02d", baseName, hour);
-		ShapefileParameters params = ShapefileParameters.create()
+		ExportShapefileParameters params = ExportShapefileParameters.create()
 														.typeName("best_roads")
 														.shpSrid(SRID)
 														.charset(Charset.forName("euc-kr"));
