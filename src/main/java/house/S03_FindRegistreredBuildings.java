@@ -42,14 +42,17 @@ public class S03_FindRegistreredBuildings {
 		
 		DataSet ds = marmot.getDataSet(buildings);
 		String geomCol = ds.getGeometryColumn();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan = marmot.planBuilder("총괄표제부 보유 건물 추출")
 						.load(buildings)
 						.arcSpatialJoin(geomCol, registry, true, true)
 						.store(resultId)
+						.store(resultId, FORCE(gcInfo))
 						.build();
-		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(resultId, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(resultId);
 		result.cluster();
 		elapsed.stop();
 		

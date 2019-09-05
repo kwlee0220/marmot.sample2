@@ -64,10 +64,10 @@ public class FindBestRoadsForPickup {
 					.project("link_geom as the_geom,*-{link_geom}")
 					.filter("count >= 50")
 					.listByGroup(Group.ofKeys("hour").tags("the_geom").orderBy("count:D"))
-					.store(RESULT)
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 10);

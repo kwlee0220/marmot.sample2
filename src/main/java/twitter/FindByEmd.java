@@ -1,6 +1,5 @@
 package twitter;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -52,6 +51,8 @@ public class FindByEmd {
 		// 생성될 결과 레이어의 좌표체계를 위해 tweet 레이어의 것도 동일한 것을
 		// 사용하기 위해 tweet 레이어의 정보를 서버에서 얻는다.
 		DataSet info = marmot.getDataSet(TWEETS);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom",
+															info.getGeometryColumnInfo().srid());
 
 		// 프로그램 수행 이전에 기존 OUTPUT_LAYER을 제거시킨다.
 		marmot.deleteDataSet(RESULT);
@@ -61,12 +62,10 @@ public class FindByEmd {
 							.query(TWEETS, border)
 							.project("the_geom,id")
 							// 검색된 레코드를 'OUTPUT_LAYER' 레이어에 저장시킨다.
-							.store(RESULT)
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom",
-															info.getGeometryColumnInfo().srid());
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

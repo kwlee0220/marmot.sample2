@@ -1,6 +1,5 @@
 package appls;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -12,7 +11,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -54,9 +52,11 @@ public class FilterInSeoul {
 					.hashJoin("고유번호", CADASTRAL_SEOUL, "pnu", "*,param.the_geom",
 								JoinOptions.INNER_JOIN)
 					.project("the_geom, 고유번호 as pnu, 용도지역지구코드 as code, 용도지역지구명 as name")
-					.store(RESULT)
+					.store(RESULT, FORCE)
 					.build();
-		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		
+		result = marmot.getDataSet(RESULT);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);
@@ -79,15 +79,15 @@ public class FilterInSeoul {
 		Plan plan;
 		
 		DataSet taxi = marmot.getDataSet(CADASTRAL);
+		GeometryColumnInfo gcInfo = taxi.getGeometryColumnInfo();
 		
 		plan = marmot.planBuilder("grid_taxi_logs")
 					// 택시 로그를  읽는다.
 					.query(CADASTRAL, seoul)
 					// 승하차 로그만 선택한다.
 					.filter("pnu.startsWith('11')")
-					.store(output)
+					.store(output, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = taxi.getGeometryColumnInfo();
-		marmot.createDataSet(output, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 	}
 }

@@ -1,6 +1,6 @@
 package yunsei;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.Level;
@@ -12,7 +12,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.SquareGrid;
 import marmot.plan.Group;
@@ -77,10 +76,10 @@ public class Y2T_2 {
 					.load(TAXI_LOG)
 					.filter("status == 1 || status == 2")
 					.expand("hour:int", "hour=ts.substring(8,10)")
-					.store(TEMP_TAXI)
+					.store(TEMP_TAXI, FORCE(gcInfo))
 					.build();
-
-		result = marmot.createDataSet(TEMP_TAXI, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(TEMP_TAXI);
 		System.out.println("done: 택시 승하차 로그 선택, elapsed=" + watch.getElapsedMillisString());
 		result.cluster();
 		System.out.println("done: 승하차 로그 클러스터링, elapsed=" + watch.getElapsedMillisString());
@@ -98,23 +97,26 @@ public class Y2T_2 {
 					.aggregateByGroup(Group.ofKeys("cell_id,hour").withTags("the_geom"),
 										SUM("supply").as("supply_count"),
 										SUM("demand").as("demand_count"))
-					.store(RESULT)
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(RESULT);
 		
 		plan = marmot.planBuilder("새벽_01시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 1")
-					.store(RESULT01)
+					.store(RESULT01, FORCE(gcInfo))
 					.build();
-		result = marmot.createDataSet(RESULT01, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(RESULT01);
 		
 		plan = marmot.planBuilder("새벽_03시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 3")
-					.store(RESULT03)
+					.store(RESULT03, FORCE(gcInfo))
 					.build();
-		result = marmot.createDataSet(RESULT03, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(RESULT03);
 		
 		System.out.println("done, elapsed=" + watch.stopAndGetElpasedTimeString());
 		

@@ -1,5 +1,6 @@
 package navi_call;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -7,7 +8,6 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.Group;
 import marmot.plan.SpatialJoinOptions;
@@ -56,9 +56,10 @@ public class FindHotHospitals {
 								.aggregateByGroup(Group.ofKeys("gid").withTags("the_geom,bplc_nm"),
 												COUNT())
 								.rank("count:D", "rank")
-								.store(RESULT)
+								.store(RESULT, FORCE)
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 50);

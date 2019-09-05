@@ -1,9 +1,11 @@
 package twitter;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
+import marmot.DataSet;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.plan.Group;
@@ -47,9 +49,10 @@ public class GroupByWeekDay {
 								.aggregateByGroup(Group.ofKeys("week_day"),
 													AggregateFunction.COUNT())
 								.drop(0)
-								.store(RESULT)
+								.store(RESULT, FORCE)
 								.build();
-		marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		
 		watch.stop();
 		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());

@@ -81,9 +81,10 @@ public class S1_MapMatchingTaxiLog2 {
 					.project("*-{quad_key}")
 					.knnJoin(geomCol, Globals.ROADS_IDX, 1, Globals.DISTANCE,
 							"*,param.{the_geom as link_geom, link_id, sub_link_no}")
-					.store("tmp/result")
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		DataSet result = marmot.createDataSet("tmp/result", plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 10);

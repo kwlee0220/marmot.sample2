@@ -1,6 +1,6 @@
 package apttrx;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
 
@@ -12,7 +12,6 @@ import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSchema;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.plan.GeomOpOptions;
@@ -55,10 +54,11 @@ public class SummarizeByHighSchoolShort {
 		GeometryColumnInfo gcInfo = school.getGeometryColumnInfo();
 
 		Plan plan1 = countTradeTransaction(marmot);
+		marmot.execute(plan1);
+		
 		Plan plan2 = countLeaseTransaction(marmot);
-
-		marmot.createDataSet(TEMP, plan1, FORCE(gcInfo));
 		marmot.execute(plan2);
+		
 		System.out.println("done: 아파트 거래 정보 지오코딩, elapsed=" + watch.getElapsedMillisString());
 		
 		plan = marmot.planBuilder("고등학교_주변_거래_집계")
@@ -69,9 +69,11 @@ public class SummarizeByHighSchoolShort {
 										SUM("lease_count").as("lease_count"))
 						.defineColumn("count:long", "trade_count+lease_count")
 						.sort("count:D")
-						.store(RESULT)
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan1, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 		
 		marmot.deleteDataSet(TEMP);
@@ -85,6 +87,7 @@ public class SummarizeByHighSchoolShort {
 		String locGeomCol = aptLoc.getGeometryColumn();
 		
 		DataSet school = marmot.getDataSet(HIGH_SCHOOLS);
+		GeometryColumnInfo gcInfo = school.getGeometryColumnInfo();
 		String schoolGeomCol = school.getGeometryColumn();
 		
 		return marmot.planBuilder("고등학교_주변_아파트_매매_추출")
@@ -107,7 +110,7 @@ public class SummarizeByHighSchoolShort {
 					.defineColumn("lease_count:long", "0")
 					.project("the_geom,id,name,trade_count,lease_count")
 					
-					.store(TEMP)
+					.store(TEMP, FORCE(gcInfo))
 					.build();		
 	}
 	
@@ -116,6 +119,7 @@ public class SummarizeByHighSchoolShort {
 		String locGeomCol = aptLoc.getGeometryColumn();
 		
 		DataSet school = marmot.getDataSet(HIGH_SCHOOLS);
+		GeometryColumnInfo gcInfo = school.getGeometryColumnInfo();
 		String schoolGeomCol = school.getGeometryColumn();
 		
 		return marmot.planBuilder("고등학교_주변_아파트_전월세_추출")
@@ -137,21 +141,23 @@ public class SummarizeByHighSchoolShort {
 										COUNT().as("lease_count"))
 					.defineColumn("trade_count:long", "0")
 					.project("the_geom,id,name,trade_count,lease_count")
-					
-					.store(TEMP)
+
+					.store(TEMP, FORCE(gcInfo))
 					.build();		
 	}
 	
 	private static DataSet findHighSchool(MarmotRuntime marmot) {
 		DataSet ds = marmot.getDataSet(SCHOOLS);
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 	
 		Plan plan = marmot.planBuilder("find_high_school")
 							.load(SCHOOLS)
 							.filter("type == '고등학교'")
-							.store(HIGH_SCHOOLS)
+							.store(HIGH_SCHOOLS, FORCE(gcInfo))
 							.build();
-		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(RESULT);
 		
 		return result;
 	}

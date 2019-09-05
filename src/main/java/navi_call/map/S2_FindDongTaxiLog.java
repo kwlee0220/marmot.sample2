@@ -50,15 +50,16 @@ public class S2_FindDongTaxiLog {
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		String geomCol = input.getGeometryColumn();
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		
 		Plan plan;
 		plan = marmot.planBuilder("동내_로그_추출")
 					.load(INPUT)
 					.filterSpatially(geomCol, INTERSECTS, guBoundary)
-					.store(RESULT)
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 
 		System.out.printf("count=%d elapsed=%s%n", result.getRecordCount(),

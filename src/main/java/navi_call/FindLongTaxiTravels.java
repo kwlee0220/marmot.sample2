@@ -42,6 +42,7 @@ public class FindLongTaxiTravels {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
 
 		Plan plan = marmot.planBuilder("find_long_travels")
 								.load(TAXI_TRJ)
@@ -50,10 +51,10 @@ public class FindLongTaxiTravels {
 								.pickTopK("length:D", 10)
 								.expand("the_geom:line_string", "the_geom = ST_TRLineString(trajectory)")
 								.project("*-{trajectory}")
-								.store(RESULT)
+								.store(RESULT, FORCE(gcInfo))
 								.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		
 		SampleUtils.printPrefix(result, 5);
 	}

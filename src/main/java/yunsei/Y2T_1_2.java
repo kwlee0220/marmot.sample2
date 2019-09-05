@@ -1,6 +1,7 @@
 package yunsei;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.APPEND;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.Arrays;
@@ -88,9 +89,10 @@ public class Y2T_1_2 {
 					.load(BUS_OT_DT)
 					// 서울시 영역만 추출한다.
 					.filterSpatially(geomCol, INTERSECTS, seoul)
-					.store(TEMP_BUS_SEOUL)
+					.store(TEMP_BUS_SEOUL, FORCE(gcInfo))
 					.build();
-		result = marmot.createDataSet(TEMP_BUS_SEOUL, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(TEMP_BUS_SEOUL);
 		watch.stop();
 		
 		DataSet buffereds = null;
@@ -101,19 +103,19 @@ public class Y2T_1_2 {
 				builder.append(String.format("ot%02d = ot%02d * %.1f;%n", i, i, RATIOS.get(radius)));
 				builder.append(String.format("dt%02d = dt%02d * %.1f;%n", i, i, RATIOS.get(radius)));
 			}
-			String expr = builder.toString();	
+			String expr = builder.toString();
 			
+			StoreDataSetOptions opts = (buffereds == null)	// first iteration?
+									? FORCE(gcInfo) : APPEND;
 			plan = marmot.planBuilder("spread")
 						.load(TEMP_BUS_SEOUL)
 						.buffer(geomCol, radius)
 						.expand("area:double", expr)
-						.store(MULTI_RINGS)
+						.store(MULTI_RINGS, opts)
 						.build();
+			marmot.execute(plan);
 			if ( buffereds == null ) {
-				buffereds = marmot.createDataSet(MULTI_RINGS, plan, FORCE(gcInfo));
-			}
-			else {
-				marmot.execute(plan);
+				buffereds = marmot.getDataSet(MULTI_RINGS);
 			}
 		}
 		
@@ -147,17 +149,17 @@ public class Y2T_1_2 {
 					.intersectionJoin(geomCol, COLLECT,
 									SpatialJoinOptions.OUTPUT("*,param.tot_oa_cd,param.the_geom as param_geom"))
 					.expand("ratio:double", expr)
-					.store(TEMP_JOINED)
+					.store(TEMP_JOINED, FORCE(gcInfo))
 					.build();
-		marmot.createDataSet(TEMP_JOINED, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		
 		plan = marmot.planBuilder("analysis")
 					.load(TEMP_JOINED)
 					.aggregateByGroup(Group.ofKeys("tot_oa_cd").withTags("param_geom"), aggrFuncList)
 					.project("param_geom as the_geom, *-{param_geom}")
-					.store(RESULT)
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		
 //		ClusterWithKMeansParameters params = new ClusterWithKMeansParameters();
 //		params.dataset(INPUT);

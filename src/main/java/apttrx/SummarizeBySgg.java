@@ -1,6 +1,6 @@
 package apttrx;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.MAX;
@@ -12,7 +12,6 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.plan.Group;
@@ -40,6 +39,7 @@ public class SummarizeBySgg {
 		Plan plan;
 		DataSet emd = marmot.getDataSet(SGG);
 		String geomCol = emd.getGeometryColumn();
+		GeometryColumnInfo gcInfo = emd.getGeometryColumnInfo();
 		
 		plan = marmot.planBuilder("summarize_by_station")
 						.load(APT_TRX)
@@ -61,10 +61,9 @@ public class SummarizeBySgg {
 									JoinOptions.INNER_JOIN)
 						.sort("거래건수:D")
 						
-						.store(RESULT)
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		GeometryColumnInfo gcInfo = emd.getGeometryColumnInfo();
-		marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		watch.stop();
 		
 		System.out.printf("elapsed: %s%n", watch.getElapsedMillisString());

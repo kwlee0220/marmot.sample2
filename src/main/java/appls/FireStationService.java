@@ -33,16 +33,18 @@ public class FireStationService {
 		DataSet result;
 		
 		DataSet ds = marmot.getDataSet(LAND_USAGE);
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		String geomCol = ds.getGeometryColumn();
 		
 		plan = marmot.planBuilder("combine")
 					.load(LAND_USAGE)
 					.filter("lclas_cl=='UQA100'")
 					.spatialJoin(geomCol, POP, "param.{the_geom as the_geom,인구수 as pop}")
-					.store(RESULT)
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		result = marmot.getDataSet(RESULT);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

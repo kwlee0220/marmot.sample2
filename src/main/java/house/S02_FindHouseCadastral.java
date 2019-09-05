@@ -86,6 +86,7 @@ public class S02_FindHouseCadastral {
 		String tempCol = "temp_geom";
 		String joinOutColsExpr = String.format("left.*,right.%s as %s", rightGeomCol, tempCol);
 		String projectColsExpr = String.format("*-{%s}", tempCol);
+		GeometryColumnInfo gcInfo = left.getGeometryColumnInfo();
 
 		Plan plan = marmot.planBuilder("전국 지적도에서 주거지적 추출")
 						.loadSpatialIndexJoin(cadastral, houseAreaId, joinOutColsExpr)
@@ -93,10 +94,11 @@ public class S02_FindHouseCadastral {
 						.intersection("the_geom", tempCol, "the_geom")
 						.dropEmptyGeometry("the_geom")
 						.project(projectColsExpr)
-						.store(result)
+						.store(result, FORCE(gcInfo))
 						.build();
-		GeometryColumnInfo gcInfo = left.getGeometryColumnInfo();
-		DataSet ds = marmot.createDataSet(result, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet ds = marmot.getDataSet(result);
 
 		elapsed.stop();
 		System.out.printf("전국 지적도에서 주거지적 추출 완료, count=%d elapsed=%s%n",

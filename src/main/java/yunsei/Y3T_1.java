@@ -1,6 +1,7 @@
 package yunsei;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
@@ -8,7 +9,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.advanced.LISAWeight;
 import marmot.plan.SpatialJoinOptions;
@@ -68,9 +68,9 @@ public class Y3T_1 {
 					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES)
 					.update("refl70 = 0")
 					.project(geomCol + ",refl70,point_x,point_y")
-					.store(TEMP_POP)
+					.store(TEMP_POP, FORCE(gcInfo))
 					.build();
-		result = marmot.createDataSet(TEMP_POP, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		System.out.println("elapsed: " + watch.getElapsedMillisString());
 
 		plan = marmot.planBuilder("")
@@ -81,15 +81,15 @@ public class Y3T_1 {
 					.store(TEMP_POP)
 					.build();
 		marmot.execute(plan);
+		result = marmot.getDataSet(TEMP_POP);
 		result.cluster();
 		System.out.println("elapsed: " + watch.getElapsedMillisString());
 		
 		plan = marmot.planBuilder("핫 스팟 분석")
 					.loadGetisOrdGi(TEMP_POP, "refl70", 500, LISAWeight.FIXED_DISTANCE_BAND)
-					.store(RESULT)
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
-		
+		marmot.execute(plan);
 		System.out.println("done, elapsed=" + watch.stopAndGetElpasedTimeString());
 	}
 	
@@ -97,15 +97,17 @@ public class Y3T_1 {
 		Plan plan;
 		
 		DataSet ds = marmot.getDataSet(PUBLIC_CARE);
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
+		
 		plan = marmot.planBuilder("노인복지시설 검색 후 500m 버퍼")
 					.load(PUBLIC_CARE)
 					.filter("시설종류코드=='5040200000000'")
 					.buffer(ds.getGeometryColumn(), 500)
-					.store(outputDsId)
+					.store(outputDsId, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(outputDsId, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		
+		DataSet result = marmot.getDataSet(outputDsId);
 		return result;
 	}
 	

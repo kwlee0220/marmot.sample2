@@ -55,6 +55,7 @@ public class FindByDateTime {
 										+ "$end=DateFromString('%s');",
 										DateTimeToString(FROM), DateTimeToString(TO));
 		String betweenDTPred = "DateIsBetween(created_at,$begin,$end)";
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		
 		// 질의 처리를 위한 질의 프로그램 생성
 		Plan plan = marmot.planBuilder("find_by_datetime")
@@ -65,10 +66,10 @@ public class FindByDateTime {
 								// 레코드에서 'the_geom'과 'id' 컬럼만의 레코드를 만들어서
 								.project("the_geom,id,created_at")
 								// 'OUTPUT_LAYER'에 해당하는 레이어로 저장시킨다.
-								.store(RESULT)
+								.store(RESULT, FORCE(gcInfo))
 								.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

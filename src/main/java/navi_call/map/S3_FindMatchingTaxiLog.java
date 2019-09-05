@@ -45,15 +45,16 @@ public class S3_FindMatchingTaxiLog {
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		String geomCol = input.getGeometryColumn();
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		
 		Plan plan;
 		plan = marmot.planBuilder("맵_매핑_택시로그_검색")
 					.load(INPUT)
 					.knnJoin(geomCol, Globals.ROADS, 1, Globals.DISTANCE, "*")
-					.store(RESULT)
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

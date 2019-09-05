@@ -1,6 +1,6 @@
 package misc;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -11,7 +11,6 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.SquareGrid;
 import marmot.plan.GeomOpOptions;
@@ -41,6 +40,7 @@ public class Test2017_2 {
 		String srid = input.getGeometryColumnInfo().srid();
 		Envelope bounds = input.getBounds();
 		Size2d cellSize = new Size2d(30, 30);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
 		
 		Plan plan = marmot.planBuilder("get_biz_grid")
 								.load(ADDR_BLD_UTILS)
@@ -50,10 +50,10 @@ public class Test2017_2 {
 								.intersectsBinary("cell_geom", "the_geom")
 								.aggregateByGroup(Group.ofKeys("cell_id").tags("cell_geom"), COUNT())
 								.project("cell_geom as the_geom,*-{cell_geom}")
-								.store(GRID)
+								.store(GRID, FORCE(gcInfo))
 								.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		DataSet result = marmot.createDataSet(GRID, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(GRID);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

@@ -1,6 +1,7 @@
 package yunsei;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.EMPTY;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.Arrays;
@@ -20,7 +21,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
+import marmot.PlanBuilder;
 import marmot.command.MarmotClientCommands;
 import marmot.process.geo.FeatureVector;
 import marmot.process.geo.FeatureVectorHandle;
@@ -101,10 +102,10 @@ public class Y2T_1 {
 					.load(BUS_OT_DT)
 					// 서울시 영역만 추출한다.
 					.filterSpatially(geomCol, INTERSECTS, seoul)
-					.store(TEMP_BUS_SEOUL)
+					.store(TEMP_BUS_SEOUL, FORCE(gcInfo))
 					.build();
-
-		result = marmot.createDataSet(TEMP_BUS_SEOUL, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(TEMP_BUS_SEOUL);
 		System.out.println("done: crop bus_ot_dt with seoul");
 		
 		DataSet multiRings = doMultiRing(marmot, result, seoul, MULTI_RINGS);
@@ -126,10 +127,10 @@ public class Y2T_1 {
 					// 서울시 영역만 추출한다.
 					.filter("행정코드.startsWith('11')")
 //					.buildSpatialHistogram(geomCol, MULTI_RINGS, valueColNames)
-					.store(TEMP_HISTOGRAM)
+					.store(TEMP_HISTOGRAM, FORCE(gcInfo))
 					.build();
-
-		result = marmot.createDataSet(TEMP_HISTOGRAM, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(TEMP_HISTOGRAM);
 		
 		marmot.deleteDataSet(MULTI_RINGS);
 		System.out.println("done: build_histogram, elapsed=" + watch.getElapsedMillisString());
@@ -185,23 +186,26 @@ public class Y2T_1 {
 			String expr2 = builder.toString();	
 			
 			StopWatch watch = StopWatch.start();
-			Plan plan = marmot.planBuilder("버스_승하차수_링버퍼_배분_반경_" + radius)
+			PlanBuilder pbldr = marmot.planBuilder("버스_승하차수_링버퍼_배분_반경_" + radius)
 							.load(bus.getId())
 							.buffer(geomCol, radius)
 							.expand("area:double", expr1)
 							// 버퍼링 영역 중에서 서울 영역만을 추출한다
 							.intersection(geomCol, range)
 							.expand("ratio:double", expr2)
-							.project("*-{area,ratio}")
-							.store(outputDs)
-							.build();
+							.project("*-{area,ratio}");
+			
+			Plan plan;
 			if ( multiRings == null ) {
 				GeometryColumnInfo gcInfo = bus.getGeometryColumnInfo();
-				multiRings = marmot.createDataSet(outputDs, plan, FORCE(gcInfo));
+				plan = pbldr.store(outputDs, FORCE(gcInfo))
+							.build();
 			}
 			else {
-				marmot.execute(plan);
+				plan = pbldr.store(outputDs, EMPTY)
+							.build();
 			}
+			marmot.execute(plan);
 			
 			System.out.printf("done: buffer (ratius=%dm, elapsed=%s)%n",
 								radius, watch.stopAndGetElpasedTimeString());

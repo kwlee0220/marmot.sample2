@@ -76,7 +76,8 @@ public class Process {
 	private static DataSet analysis(PBMarmotClient marmot) {
 		StopWatch watch = StopWatch.start();
 		System.out.printf("토지피복도 공간조인...");
-		
+
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		String colExpr = "left.{the_geom, cover as c1987, uid as uid1987},"
 						+ "right.{the_geom as g2,cover as c2007, uid as uid2007";
 		Plan plan = marmot.planBuilder("토지피복_변화량")
@@ -87,10 +88,10 @@ public class Process {
 												.workerCount(1),
 											UNION_GEOM("the_geom").as("the_geom"))
 						.project("the_geom,c1987,c2007")
-						.store(RESULT)
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		return result;
@@ -127,9 +128,9 @@ public class Process {
 							.assignUid("uid")
 							.splitGeometry(gcInfo.name())
 							.drop(0)
-							.store(outputDsId)
+							.store(outputDsId, FORCE(gcInfo))
 							.build();
-		DataSet result = marmot.createDataSet(outputDsId, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}

@@ -1,6 +1,5 @@
 package twitter;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -21,7 +20,7 @@ import utils.StopWatch;
  */
 public class ImportTweets {
 	private static final String RAW_DIR = "로그/social/twitter_raw";
-	private static final String OUTPUT_DATASET = "로그/social/twitter";
+	private static final String RESULT = "로그/social/twitter";
 	private static final String SRID = "EPSG:5186";
 
 	public static final void main(String... args) throws Exception {
@@ -43,7 +42,8 @@ public class ImportTweets {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-		
+
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
 		// 질의 처리를 위한 질의 프로그램 생성
 		Plan plan = marmot.planBuilder("import_tweets")
 							// 'LOG_DIR' 디렉토리에 저장된 Tweet 로그 파일들을 읽는다.
@@ -54,12 +54,12 @@ public class ImportTweets {
 							// 중복된 id의 tweet를 제거시킨다.
 							.distinct("id")
 							// 'OUTPUT_LAYER'에 해당하는 레이어로 저장시킨다.
-							.store(OUTPUT_DATASET)
+							.store(RESULT, FORCE(gcInfo))
 							.build();
 
 		// MarmotServer에 생성한 프로그램을 전송하여 수행시킨다.
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
-		DataSet result = marmot.createDataSet(OUTPUT_DATASET, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		result.cluster();
 		watch.stop();
 		

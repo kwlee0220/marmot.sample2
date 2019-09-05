@@ -1,12 +1,12 @@
 package podo;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -57,9 +57,9 @@ public class DiffLandCoversIdx {
 						.aggregateByGroup(Group.ofKeys("t1987,t2007").workerCount(1),
 											SUM("area").as("total_area"))
 						.expand("total_area:long", "total_area = Math.round(total_area)")
-						.store(RESULT)
+						.store(RESULT, FORCE)
 						.build();
-		marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
 		
 		watch.stop();
 		System.out.println("완료: 토지피복도 교차조인");

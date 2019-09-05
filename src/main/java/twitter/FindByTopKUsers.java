@@ -53,6 +53,8 @@ public class FindByTopKUsers {
 		System.out.println("topk_users=" + userIds);
 				
 		DataSet info = marmot.getDataSet(TWEETS);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom",
+															info.getGeometryColumnInfo().srid());
 			
 		String userIdsStr = userIds.stream().collect(Collectors.joining(","));
 		String inializer = String.format("$target_users = Lists.newArrayList(%s)", userIdsStr);
@@ -61,11 +63,10 @@ public class FindByTopKUsers {
 								.load(TWEETS)
 								.filter(RecordScript.of(inializer, pred))
 								.project("the_geom,id")
-								.store(RESULT)
+								.store(RESULT, FORCE(gcInfo))
 								.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom",
-															info.getGeometryColumnInfo().srid());
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

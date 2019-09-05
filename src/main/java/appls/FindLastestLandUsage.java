@@ -1,5 +1,7 @@
 package appls;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -8,7 +10,6 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -43,9 +44,11 @@ public class FindLastestLandUsage {
 					.project("등록일자")
 					.distinct("등록일자")
 					.sort("등록일자:D")
-					.store(RESULT)
+					.store(RESULT, FORCE)
 					.build();
-		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		
+		result = marmot.getDataSet(RESULT);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

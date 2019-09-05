@@ -39,14 +39,16 @@ public class S01_FindHouseArea {
 		StopWatch elapsed = StopWatch.start();
 		
 		DataSet ds = marmot.getDataSet(landUsage);
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan = marmot.planBuilder("주거지역 추출")
 						.load(landUsage)
 						.filter("lclas_cl == 'UQA100'")
-						.store(result)
+						.store(landUsage, FORCE(gcInfo))
 						.build();
-		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		DataSet resDs = marmot.createDataSet(landUsage, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet resDs = marmot.getDataSet(landUsage);
 		resDs.cluster();
 		System.out.printf("용도지역지구에서 주거지역 추출 완료, count=%d, elapsed=%s%n",
 							resDs.getRecordCount(), elapsed.getElapsedMillisString());

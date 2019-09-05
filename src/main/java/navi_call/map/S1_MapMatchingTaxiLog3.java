@@ -55,9 +55,10 @@ public class S1_MapMatchingTaxiLog3 {
 					.knnJoin(geomCol, Globals.ROADS_IDX, 1, Globals.DISTANCE,
 							"*,param.{the_geom as link_geom, link_id, sub_link_no}")
 //					.update(script)
-					.store(RESULT)
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 10);

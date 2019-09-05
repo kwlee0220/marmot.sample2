@@ -1,6 +1,7 @@
 package misc;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +13,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordScript;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -48,6 +48,7 @@ public class Test2017_0 {
 
 		DataSet input = marmot.getDataSet(ADDR_BLD);
 		String srid = input.getGeometryColumnInfo().srid();
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
 		
 		String initExpr = BLD_CODES.stream()
 									.map(cd -> "\"" + cd + "\"")
@@ -58,10 +59,10 @@ public class Test2017_0 {
 								.load(ADDR_BLD)
 								.filter(RecordScript.of(initExpr, "$codes.contains(건물용도코드)"))
 								.project("the_geom,건물관리번호")
-								.store(ADDR_BLD_UTILS)
+								.store(ADDR_BLD_UTILS, FORCE(gcInfo))
 								.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		DataSet result = marmot.createDataSet(ADDR_BLD_UTILS, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(ADDR_BLD_UTILS);
 		result.cluster();
 		watch.stop();
 		

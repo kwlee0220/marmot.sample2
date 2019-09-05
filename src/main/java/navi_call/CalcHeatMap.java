@@ -1,6 +1,5 @@
 package navi_call;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
 
@@ -60,15 +59,16 @@ public class CalcHeatMap {
 
 		Size2i resol = new Size2i(50, 50);
 		Size2d cellSize = GeoClientUtils.divide(envl, resol);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
 		
 		Plan plan = marmot.planBuilder("calc_heat_map")
 							.loadGrid(new SquareGrid(envl, cellSize), 32)
 							.spatialJoin("the_geom", TAXI_LOG, "*")
 							.aggregateByGroup(Group.ofKeys("cell_id").tags("the_geom"), COUNT())
-							.store(RESULT)
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		
 		SampleUtils.printPrefix(result, 5);
 	}

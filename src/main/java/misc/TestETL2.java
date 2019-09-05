@@ -1,6 +1,6 @@
 package misc;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -9,7 +9,6 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -49,9 +48,10 @@ public class TestETL2 {
 						.load(INPUT)
 						.spatialJoin("the_geom", PARAM, "the_geom,param.sub_sta_sn")
 						.aggregateByGroup(Group.ofKeys("sub_sta_sn"), COUNT())
-						.store(RESULT)
+						.store(RESULT, FORCE)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
@@ -64,9 +64,11 @@ public class TestETL2 {
 		Plan plan = marmot.planBuilder("buffer")
 						.load(STATIONS)
 						.buffer("the_geom", 100)
-						.store(PARAM)
+						.store(PARAM, FORCE(gcInfo))
 						.build();
-		DataSet result = marmot.createDataSet(PARAM, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(PARAM);
 		result.cluster();
 	}
 }

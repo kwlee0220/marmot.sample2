@@ -42,14 +42,17 @@ public class S04_FindHouseCandidates {
 		
 		DataSet input = marmot.getDataSet(houseCadastral);
 		String geomCol = input.getGeometryColumn();
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 
 		Plan plan = marmot.planBuilder("총괄표제부 건물영역 제외 주거지적 영역 추출")
 						.load(houseCadastral)
 						.differenceJoin(geomCol, registeredBuildings)
 						.store(result)
+						.store(result, FORCE(gcInfo))
 						.build();
-		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		DataSet ds = marmot.createDataSet(result, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet ds = marmot.getDataSet(result);
 
 		elapsed.stop();
 		System.out.printf("총괄표제부 건물영역 제외 주거지적 영역 추출 완료, "

@@ -1,6 +1,5 @@
 package navi_call;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.WITHIN_DISTANCE;
 
@@ -24,7 +23,7 @@ import utils.StopWatch;
  */
 public class FindPassingStation {
 	private static final String TAXI_TRJ = "로그/나비콜/택시경로";
-	private static final String OUTPUT = "tmp/result";
+	private static final String RESULT = "tmp/result";
 	private static final String SRID = "EPSG:5186";
 
 	public static final void main(String... args) throws Exception {
@@ -47,7 +46,8 @@ public class FindPassingStation {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 //		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
-		
+
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
 		Geometry key = getSubwayStations(marmot, "사당역");
 		Plan plan = marmot.planBuilder("find_passing_station")
 							.load(TAXI_TRJ)
@@ -55,10 +55,10 @@ public class FindPassingStation {
 							.defineColumn("the_geom:line_string", "ST_TRLineString(trajectory)")
 							.filterSpatially("the_geom", WITHIN_DISTANCE(100), key)
 							.project("*-{trajectory}")
-							.store(OUTPUT)
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		
 		SampleUtils.printPrefix(result, 5);
 		

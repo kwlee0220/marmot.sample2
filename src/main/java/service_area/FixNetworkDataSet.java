@@ -1,6 +1,5 @@
 package service_area;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -20,7 +19,7 @@ import utils.StopWatch;
  */
 public class FixNetworkDataSet {
 	private static final String INPUT = "교통/도로/네트워크_추진단";
-	private static final String OUTPUT = "교통/도로/네트워크_fixed";
+	private static final String RESULT = "교통/도로/네트워크_fixed";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -44,6 +43,7 @@ public class FixNetworkDataSet {
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		String geomCol = input.getGeometryColumn();
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		
 		String updEXpr = String.format("%1$s=id.startsWith('D') ? %1$s.reverse() : %1$s", geomCol);
 		
@@ -51,10 +51,10 @@ public class FixNetworkDataSet {
 		plan = marmot.planBuilder("fix_network_dataset")
 					.load(INPUT)
 					.update(updEXpr)
-					.store(OUTPUT)
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		DataSet ds = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet ds = marmot.getDataSet(RESULT);
 		ds.cluster();
 
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());

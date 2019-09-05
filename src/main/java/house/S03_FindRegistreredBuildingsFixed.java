@@ -43,14 +43,16 @@ public class S03_FindRegistreredBuildingsFixed {
 		
 		DataSet input = marmot.getDataSet(buildings);
 		String geomCol = input.getGeometryColumn();
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 
 		Plan plan = marmot.planBuilder("총괄표제부 보유 건물 추출")
 						.load(registry, LoadOptions.SPLIT_COUNT(8))
 						.knnJoin(geomCol, buildings, 10, 1, "param.*")
-						.store(result)
+						.store(result, FORCE(gcInfo))
 						.build();
-		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		DataSet ds = marmot.createDataSet(result, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet ds = marmot.getDataSet(result);
 		ds.cluster();
 		elapsed.stop();
 		
