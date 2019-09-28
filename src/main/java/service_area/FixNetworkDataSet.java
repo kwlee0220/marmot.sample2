@@ -58,6 +58,6 @@ public class FixNetworkDataSet {
 		ds.cluster();
 
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 }

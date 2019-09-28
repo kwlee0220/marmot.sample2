@@ -33,7 +33,7 @@ public class S02_FindHouseCadastral {
 		// 전국 지적도에서 주거지적 추출
 		process(marmot, CADASTRAL, HOUSE_AREA, RESULT);
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 
 //	static final DataSet process(MarmotRuntime marmot, String cadastral,
