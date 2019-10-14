@@ -32,7 +32,7 @@ public class S04_FindHouseCandidates {
 		// 전국 건물 중에서 총괄표제부 보유한 건물 추출
 		process(marmot, HOUSE_CADASTRAL, REG_BUILDINGS, RESULT);
 		
-		marmot.shutdown();
+		marmot.close();
 	}
 	
 	static final DataSet process(MarmotRuntime marmot, String houseCadastral,

@@ -44,6 +44,6 @@ public class FindCandidateHouseArea {
 		
 		System.out.printf("주택건설가능 택지 분석 완료, elapsed: %s%n",
 							total.stopAndGetElpasedTimeString());
-		marmot.shutdown();
+		marmot.close();
 	}
 }

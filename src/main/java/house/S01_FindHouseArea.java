@@ -31,7 +31,7 @@ public class S01_FindHouseArea {
 		// 용도지구에서 주거 지역 추출
 		process(marmot, LAND_USAGE, RESULT);
 		
-		marmot.shutdown();
+		marmot.close();
 	}
 
 	static final DataSet process(MarmotRuntime marmot, String landUsage, String result)

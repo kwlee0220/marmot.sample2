@@ -32,7 +32,7 @@ public class S03_FindRegistreredBuildings {
 		// 전국 건물 중에서 총괄표제부 보유한 건물 추출
 		process(marmot, BUILDINGS, REGISTRY, RESULT);
 		
-		marmot.shutdown();
+		marmot.close();
 	}
 	
 	static final DataSet process(MarmotRuntime marmot, String buildings, String registry,
