@@ -1,7 +1,6 @@
 package twitter;
 
 import static marmot.StoreDataSetOptions.FORCE;
-import static marmot.support.DateTimeFunctions.DateTimeToString;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +15,7 @@ import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
+import utils.LocalDateTimes;
 import utils.StopWatch;
 
 /**
@@ -53,7 +53,7 @@ public class FindByDateTime {
 		// 2015.12.25 부터  2015.12.26 이전까지 tweets을 검색하기 위한 조건 문자열 생성
 		String initPred = String.format("$begin=DateFromString('%s'); "
 										+ "$end=DateFromString('%s');",
-										DateTimeToString(FROM), DateTimeToString(TO));
+										LocalDateTimes.toString(FROM), LocalDateTimes.toString(TO));
 		String betweenDTPred = "DateIsBetween(created_at,$begin,$end)";
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		
