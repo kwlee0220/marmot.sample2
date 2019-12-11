@@ -11,8 +11,8 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.analysis.module.geo.KMeansParameters;
 import marmot.command.MarmotClientCommands;
-import marmot.process.geo.KMeansParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 

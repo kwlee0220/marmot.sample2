@@ -2,8 +2,8 @@ package service_area;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import marmot.analysis.module.geo.ServiceAreaAnaysisParameters;
 import marmot.command.MarmotClientCommands;
-import marmot.process.geo.ServiceAreaAnaysisParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
