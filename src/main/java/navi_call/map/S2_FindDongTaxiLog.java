@@ -1,17 +1,17 @@
 package navi_call.map;
 
-import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.remote.protobuf.PBMarmotClient;
 import navi_call.Globals;
 import utils.CommandLine;

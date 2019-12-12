@@ -1,17 +1,17 @@
 package twitter;
 
-import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.time.LocalDateTime;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordScript;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;

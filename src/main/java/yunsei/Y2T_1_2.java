@@ -1,7 +1,7 @@
 package yunsei;
 
-import static marmot.StoreDataSetOptions.APPEND;
-import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.StoreDataSetOptions.APPEND;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.Arrays;
@@ -18,12 +18,12 @@ import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.AggregateFunction;
+import marmot.optor.StoreDataSetOptions;
 import marmot.plan.Group;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;

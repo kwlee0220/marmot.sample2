@@ -8,11 +8,11 @@ import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Point;
 
 import common.SampleUtils;
-import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.analysis.module.geo.KMeansParameters;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 

@@ -1,7 +1,7 @@
 package yunsei;
 
-import static marmot.StoreDataSetOptions.EMPTY;
-import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.StoreDataSetOptions.EMPTY;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.Arrays;
@@ -17,8 +17,6 @@ import org.apache.log4j.LogManager;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Geometry;
 
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.PlanBuilder;
@@ -26,6 +24,8 @@ import marmot.analysis.module.geo.FeatureVector;
 import marmot.analysis.module.geo.FeatureVectorHandle;
 import marmot.analysis.module.geo.KMeansParameters;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;

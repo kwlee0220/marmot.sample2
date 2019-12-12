@@ -1,15 +1,15 @@
 package yunsei;
 
-import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.geo.advanced.LISAWeight;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;

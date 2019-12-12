@@ -1,7 +1,7 @@
 package podo;
 
-import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.UNION_GEOM;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,10 +9,10 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.externio.geojson.GeoJsonRecordSetWriter;
 import marmot.plan.Group;
 import marmot.plan.LoadOptions;
