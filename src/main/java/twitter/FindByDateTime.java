@@ -58,7 +58,7 @@ public class FindByDateTime {
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		
 		// 질의 처리를 위한 질의 프로그램 생성
-		Plan plan = marmot.planBuilder("find_by_datetime")
+		Plan plan = Plan.builder("find_by_datetime")
 								// 'INPUT' 디렉토리에 저장된 Tweet 로그 파일들을 읽는다.
 								.load(TWEETS)
 								// 2015.12.30 부터  2016.01.2 이전까지 레코드만을 뽑아서

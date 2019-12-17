@@ -80,7 +80,7 @@ public class Process {
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		String colExpr = "left.{the_geom, cover as c1987, uid as uid1987},"
 						+ "right.{the_geom as g2,cover as c2007, uid as uid2007";
-		Plan plan = marmot.planBuilder("토지피복_변화량")
+		Plan plan = Plan.builder("토지피복_변화량")
 						.loadSpatialIndexJoin(OUTPUT_1987_S, OUTPUT_2007_S, colExpr)
 						.intersection("the_geom", "g2", "the_geom")
 						.aggregateByGroup(Group.ofKeys("uid1987,uid2007")
@@ -122,7 +122,7 @@ public class Process {
 		DataSet ds = marmot.getDataSet(inputDsId);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder(inputDsId + "_분할")
+		Plan plan = Plan.builder(inputDsId + "_분할")
 							.load(inputDsId, LoadOptions.SPLIT_COUNT(16))
 							.project("the_geom, 분류구분 as cover")
 							.assignUid("uid")

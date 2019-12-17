@@ -37,7 +37,7 @@ public class TestETL1 {
 		StopWatch watch = StopWatch.start();
 		
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		Plan plan = marmot.planBuilder("test_dtg1")
+		Plan plan = Plan.builder("test_dtg1")
 						.load(INPUT)
 						.buffer("the_geom", 50)
 						.aggregate(AggregateFunction.ENVELOPE("the_geom"))

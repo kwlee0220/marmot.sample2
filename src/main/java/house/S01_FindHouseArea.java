@@ -41,7 +41,7 @@ public class S01_FindHouseArea {
 		DataSet ds = marmot.getDataSet(landUsage);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
-		Plan plan = marmot.planBuilder("주거지역 추출")
+		Plan plan = Plan.builder("주거지역 추출")
 						.load(landUsage)
 						.filter("lclas_cl == 'UQA100'")
 						.store(landUsage, FORCE(gcInfo))

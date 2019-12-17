@@ -44,7 +44,7 @@ public class FindHotTaxiPlaces {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		Plan plan = marmot.planBuilder("find_hot_taxi_places")
+		Plan plan = Plan.builder("find_hot_taxi_places")
 							.load(TAXI_LOG)
 							.filter("status==1 || status==2")
 							.spatialJoin("the_geom", EMD,

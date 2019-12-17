@@ -49,7 +49,7 @@ public class FindPassingStation {
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
 		Geometry key = getSubwayStations(marmot, "사당역");
-		Plan plan = marmot.planBuilder("find_passing_station")
+		Plan plan = Plan.builder("find_passing_station")
 							.load(TAXI_TRJ)
 							.filter("status == 3")
 							.defineColumn("the_geom:line_string", "ST_TRLineString(trajectory)")
@@ -70,7 +70,7 @@ public class FindPassingStation {
 	private static Geometry getSubwayStations(PBMarmotClient marmot, String stationName)
 		throws Exception {
 		String predicate = String.format("kor_sub_nm == '%s'", stationName);
-		Plan plan = marmot.planBuilder("filter_subway_stations")
+		Plan plan = Plan.builder("filter_subway_stations")
 							.load(SUBWAY_STATIONS)
 							.filter(predicate)
 							.project("the_geom")

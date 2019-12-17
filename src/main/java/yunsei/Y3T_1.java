@@ -63,7 +63,7 @@ public class Y3T_1 {
 		GeometryColumnInfo gcInfo = pop.getGeometryColumnInfo();
 		String geomCol = pop.getGeometryColumn();
 		
-		plan = marmot.planBuilder("")
+		plan = Plan.builder("")
 					.load(POPULATION)
 					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES)
 					.update("refl70 = 0")
@@ -73,7 +73,7 @@ public class Y3T_1 {
 		marmot.execute(plan);
 		System.out.println("elapsed: " + watch.getElapsedMillisString());
 
-		plan = marmot.planBuilder("")
+		plan = Plan.builder("")
 					.load(POPULATION)
 					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES,
 										SpatialJoinOptions.NEGATED)
@@ -85,7 +85,7 @@ public class Y3T_1 {
 		result.cluster();
 		System.out.println("elapsed: " + watch.getElapsedMillisString());
 		
-		plan = marmot.planBuilder("핫 스팟 분석")
+		plan = Plan.builder("핫 스팟 분석")
 					.loadGetisOrdGi(TEMP_POP, "refl70", 500, LISAWeight.FIXED_DISTANCE_BAND)
 					.store(RESULT, FORCE(gcInfo))
 					.build();
@@ -99,7 +99,7 @@ public class Y3T_1 {
 		DataSet ds = marmot.getDataSet(PUBLIC_CARE);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
-		plan = marmot.planBuilder("노인복지시설 검색 후 500m 버퍼")
+		plan = Plan.builder("노인복지시설 검색 후 500m 버퍼")
 					.load(PUBLIC_CARE)
 					.filter("시설종류코드=='5040200000000'")
 					.buffer(ds.getGeometryColumn(), 500)
@@ -120,7 +120,7 @@ public class Y3T_1 {
 //						  + "|| age_intl==105";
 //		
 //		DataSet ds = marmot.getDataSet(SGG);
-//		plan = marmot.planBuilder("geo_population")
+//		plan = Plan.builder("geo_population")
 //					.load(POPULATION)
 //					.filter(filterExpr)
 //					.groupBy("sig_cd")

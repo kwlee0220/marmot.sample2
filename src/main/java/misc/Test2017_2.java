@@ -42,7 +42,7 @@ public class Test2017_2 {
 		Size2d cellSize = new Size2d(30, 30);
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
 		
-		Plan plan = marmot.planBuilder("get_biz_grid")
+		Plan plan = Plan.builder("get_biz_grid")
 								.load(ADDR_BLD_UTILS)
 								.buffer("the_geom", 100, GeomOpOptions.OUTPUT("buffer"))
 								.assignGridCell("buffer", new SquareGrid(bounds, cellSize), false)

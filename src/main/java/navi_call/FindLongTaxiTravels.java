@@ -44,7 +44,7 @@ public class FindLongTaxiTravels {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
 
-		Plan plan = marmot.planBuilder("find_long_travels")
+		Plan plan = Plan.builder("find_long_travels")
 								.load(TAXI_TRJ)
 								.filter("status == 3")
 								.defineColumn("length:double", "ST_TRLength(trajectory)")

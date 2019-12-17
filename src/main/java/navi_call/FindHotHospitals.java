@@ -46,7 +46,7 @@ public class FindHotHospitals {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		Plan plan = marmot.planBuilder("find_hot_hospitals")
+		Plan plan = Plan.builder("find_hot_hospitals")
 								.load(TAXI_LOG)
 								.filter("status==1 || status==2")
 								.spatialJoin("the_geom", HOSPITAL,

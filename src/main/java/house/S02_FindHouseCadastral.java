@@ -52,7 +52,7 @@ public class S02_FindHouseCadastral {
 //		String joinOutColsExpr = String.format("*,param.%s as %s", rightGeomCol, tempCol);
 //		String projectColsExpr = String.format("*-{%s}", tempCol);
 //
-//		Plan plan = marmot.planBuilder("전국 지적도에서 주거지적 추출")
+//		Plan plan = Plan.builder("전국 지적도에서 주거지적 추출")
 //						.load(cadastral)
 //						.spatialJoin(leftGeomCol, houseAreaId, INTERSECTS, joinOutColsExpr)
 //						.shard(45)
@@ -88,7 +88,7 @@ public class S02_FindHouseCadastral {
 		String projectColsExpr = String.format("*-{%s}", tempCol);
 		GeometryColumnInfo gcInfo = left.getGeometryColumnInfo();
 
-		Plan plan = marmot.planBuilder("전국 지적도에서 주거지적 추출")
+		Plan plan = Plan.builder("전국 지적도에서 주거지적 추출")
 						.loadSpatialIndexJoin(cadastral, houseAreaId, joinOutColsExpr)
 						.shard(45)
 						.intersection("the_geom", tempCol, "the_geom")

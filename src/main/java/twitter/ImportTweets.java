@@ -45,7 +45,7 @@ public class ImportTweets {
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
 		// 질의 처리를 위한 질의 프로그램 생성
-		Plan plan = marmot.planBuilder("import_tweets")
+		Plan plan = Plan.builder("import_tweets")
 							// 'LOG_DIR' 디렉토리에 저장된 Tweet 로그 파일들을 읽는다.
 							.load(RAW_DIR)
 							// 'coordinates'의 위경도 좌표계를 EPSG:5186으로 변경한 값을

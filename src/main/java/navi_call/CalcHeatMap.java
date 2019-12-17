@@ -61,7 +61,7 @@ public class CalcHeatMap {
 		Size2d cellSize = GeoClientUtils.divide(envl, resol);
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
 		
-		Plan plan = marmot.planBuilder("calc_heat_map")
+		Plan plan = Plan.builder("calc_heat_map")
 							.loadGrid(new SquareGrid(envl, cellSize), 32)
 							.spatialJoin("the_geom", TAXI_LOG, "*")
 							.aggregateByGroup(Group.ofKeys("cell_id").tags("the_geom"), COUNT())

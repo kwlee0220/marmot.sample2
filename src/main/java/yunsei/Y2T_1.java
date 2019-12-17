@@ -91,14 +91,14 @@ public class Y2T_1 {
 		String geomCol = input.getGeometryColumn();
 		
 		// 전국 시도 행정구역 데이터에서 서울특별시 영역만을 추출한다.
-		plan = marmot.planBuilder("get_seoul")
+		plan = Plan.builder("get_seoul")
 					.load(SID)
 					.filter("ctprvn_cd == '11'")
 					.build();
 		Geometry seoul = marmot.executeLocally(plan).toList().get(0).getGeometry(geomCol);
 
 		// 버스 승하차 정보에서 서울 구역부분만 추출한다.
-		plan = marmot.planBuilder("버스 승하차에서 서울부분 추출")
+		plan = Plan.builder("버스 승하차에서 서울부분 추출")
 					.load(BUS_OT_DT)
 					// 서울시 영역만 추출한다.
 					.filterSpatially(geomCol, INTERSECTS, seoul)
@@ -122,7 +122,7 @@ public class Y2T_1 {
 												return Stream.of(ot, dt);
 											})
 											.collect(Collectors.toList());
-		plan = marmot.planBuilder("승하차 히스트그램 생성")
+		plan = Plan.builder("승하차 히스트그램 생성")
 					.load(COLLECT)
 					// 서울시 영역만 추출한다.
 					.filter("행정코드.startsWith('11')")
@@ -186,7 +186,7 @@ public class Y2T_1 {
 			String expr2 = builder.toString();	
 			
 			StopWatch watch = StopWatch.start();
-			PlanBuilder pbldr = marmot.planBuilder("버스_승하차수_링버퍼_배분_반경_" + radius)
+			PlanBuilder pbldr = Plan.builder("버스_승하차수_링버퍼_배분_반경_" + radius)
 							.load(bus.getId())
 							.buffer(geomCol, radius)
 							.expand("area:double", expr1)

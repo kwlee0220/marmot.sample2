@@ -44,7 +44,7 @@ public class S03_FindRegistreredBuildings {
 		String geomCol = ds.getGeometryColumn();
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
-		Plan plan = marmot.planBuilder("총괄표제부 보유 건물 추출")
+		Plan plan = Plan.builder("총괄표제부 보유 건물 추출")
 						.load(buildings)
 						.arcSpatialJoin(geomCol, registry, true, true)
 						.store(resultId)

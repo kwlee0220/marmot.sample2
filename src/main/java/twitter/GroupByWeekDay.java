@@ -42,7 +42,7 @@ public class GroupByWeekDay {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
-		Plan plan = marmot.planBuilder("group_by_weekday_and_count")
+		Plan plan = Plan.builder("group_by_weekday_and_count")
 								.load(TWEETS)
 								.project("id,created_at")
 								.expand("week_day:int", "week_day = ST_DTWeekDay(created_at)")

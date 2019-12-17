@@ -46,7 +46,7 @@ public class DiffLandCoversIdx {
 		DataSet cover1987 = marmot.getDataSet(LAND_COVER_1987);
 		String geomCol = cover1987.getGeometryColumn();
 
-		Plan plan = marmot.planBuilder("토지피복_변화량")
+		Plan plan = Plan.builder("토지피복_변화량")
 						.loadSpatialIndexJoin(LAND_COVER_1987, LAND_COVER_2007, "left.{the_geom,분류구 as t1987},"
 						+ "right.{the_geom as the_geom2,분류구 as t2007,"
 						+ "재분류 as t2007_2}")

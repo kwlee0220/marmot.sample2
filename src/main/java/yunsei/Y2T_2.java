@@ -65,14 +65,14 @@ public class Y2T_2 {
 		String geomCol = input.getGeometryColumn();
 		
 		// 전국 시도 행정구역 데이터에서 서울특별시 영역만을 추출하고, 영역의 MBR를 구한다.
-		plan = marmot.planBuilder("get_seoul")
+		plan = Plan.builder("get_seoul")
 					.load(SID)
 					.filter("ctprvn_cd == '11'")
 					.build();
 		Geometry seoul = marmot.executeLocally(plan).toList().get(0).getGeometry(geomCol);
 		Envelope bounds = seoul.getEnvelopeInternal();
 		
-		plan = marmot.planBuilder("택시_승하차_로그_선택")
+		plan = Plan.builder("택시_승하차_로그_선택")
 					.load(TAXI_LOG)
 					.filter("status == 1 || status == 2")
 					.expand("hour:int", "hour=ts.substring(8,10)")
@@ -90,7 +90,7 @@ public class Y2T_2 {
 					+ "if ( hour == null ) { hour = 0; }";
 
 		// 버스 승하차 정보에서 서울 구역부분만 추출한다.
-		plan = marmot.planBuilder("그리드_생성_후_셀별_승하차_횟수_집계")
+		plan = Plan.builder("그리드_생성_후_셀별_승하차_횟수_집계")
 					.loadGrid(new SquareGrid(bounds, CELL_SIZE), NWORKERS)
 					.spatialOuterJoin("the_geom", TEMP_TAXI, "*,param.{hour,status}")
 					.expand("supply:int, demand:int", expr)
@@ -102,7 +102,7 @@ public class Y2T_2 {
 		marmot.execute(plan);
 		result = marmot.getDataSet(RESULT);
 		
-		plan = marmot.planBuilder("새벽_01시_데이터  선택")
+		plan = Plan.builder("새벽_01시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 1")
 					.store(RESULT01, FORCE(gcInfo))
@@ -110,7 +110,7 @@ public class Y2T_2 {
 		marmot.execute(plan);
 		result = marmot.getDataSet(RESULT01);
 		
-		plan = marmot.planBuilder("새벽_03시_데이터  선택")
+		plan = Plan.builder("새벽_03시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 3")
 					.store(RESULT03, FORCE(gcInfo))

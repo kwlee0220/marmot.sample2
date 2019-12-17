@@ -39,7 +39,7 @@ public class FindLastestLandUsage {
 		// 전국 시도 행정구역 데이터에서 서울특별시 영역만을 추출한다.
 		Geometry seoul = getSeoulBoundary(marmot);
 		
-		plan = marmot.planBuilder("combine")
+		plan = Plan.builder("combine")
 					.load(LAND_USAGE)
 					.project("등록일자")
 					.distinct("등록일자")
@@ -59,7 +59,7 @@ public class FindLastestLandUsage {
 		Plan plan;
 		
 		DataSet sid = marmot.getDataSet(SID);
-		plan = marmot.planBuilder("get_seoul")
+		plan = Plan.builder("get_seoul")
 					.load(SID)
 					.filter("ctprvn_cd == '11'")
 					.build();

@@ -59,7 +59,7 @@ public class FindByTopKUsers {
 		String userIdsStr = userIds.stream().collect(Collectors.joining(","));
 		String inializer = String.format("$target_users = Lists.newArrayList(%s)", userIdsStr);
 		String pred = "$target_users.contains(user_id)";
-		Plan plan = marmot.planBuilder("find_by_userids")
+		Plan plan = Plan.builder("find_by_userids")
 								.load(TWEETS)
 								.filter(RecordScript.of(inializer, pred))
 								.project("the_geom,id")
@@ -76,7 +76,7 @@ public class FindByTopKUsers {
 
 	public static List<String> findTopKUsers(PBMarmotClient marmot) throws Exception {
 		// 가장 자주 tweet을 한 사용자 식별자들을 저장할 임시 파일 이름을 생성한다.
-		Plan plan = marmot.planBuilder("list_topk_users")
+		Plan plan = Plan.builder("list_topk_users")
 								.load(TWEETS)
 								.aggregateByGroup(Group.ofKeys("user_id"), COUNT())
 								.pickTopK("count:D", 5)

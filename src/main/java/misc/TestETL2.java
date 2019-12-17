@@ -44,7 +44,7 @@ public class TestETL2 {
 //		bufferStations(marmot);
 		System.out.println("dataset=" + INPUT);
 		
-		Plan plan = marmot.planBuilder("test_dtg")
+		Plan plan = Plan.builder("test_dtg")
 						.load(INPUT)
 						.spatialJoin("the_geom", PARAM, "the_geom,param.sub_sta_sn")
 						.aggregateByGroup(Group.ofKeys("sub_sta_sn"), COUNT())
@@ -61,7 +61,7 @@ public class TestETL2 {
 	
 	private static void bufferStations(PBMarmotClient marmot) {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(STATIONS).getGeometryColumnInfo();
-		Plan plan = marmot.planBuilder("buffer")
+		Plan plan = Plan.builder("buffer")
 						.load(STATIONS)
 						.buffer("the_geom", 100)
 						.store(PARAM, FORCE(gcInfo))

@@ -41,7 +41,7 @@ public class SummarizeBySgg {
 		String geomCol = emd.getGeometryColumn();
 		GeometryColumnInfo gcInfo = emd.getGeometryColumnInfo();
 		
-		plan = marmot.planBuilder("summarize_by_station")
+		plan = Plan.builder("summarize_by_station")
 						.load(APT_TRX)
 						.hashJoin("시군구,번지,단지명", APT_LOC,
 								"시군구,번지,단지명", "*,param.{info}", JoinOptions.INNER_JOIN)

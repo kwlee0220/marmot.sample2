@@ -48,7 +48,7 @@ public class DiffLandCoversNL {
 		DataSet cover1987 = marmot.getDataSet(LAND_COVER_1987);
 		String geomCol = cover1987.getGeometryColumn();
 
-		Plan plan = marmot.planBuilder("토지피복_변화량")
+		Plan plan = Plan.builder("토지피복_변화량")
 						.load(LAND_COVER_2007, LoadOptions.SPLIT_COUNT(2))
 						.update("분류구 = (분류구.length() > 0) ? 분류구 : 재분류")
 						.intersectionJoin(geomCol, LAND_COVER_1987,

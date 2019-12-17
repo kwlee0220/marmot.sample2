@@ -55,7 +55,7 @@ public class Test2017_0 {
 									.collect(Collectors.joining(",", "[", "]"));
 		initExpr = "$codes = Sets.newHashSet(); $codes.addAll(" + initExpr + ")";
 		
-		Plan plan = marmot.planBuilder("get_biz_grid")
+		Plan plan = Plan.builder("get_biz_grid")
 								.load(ADDR_BLD)
 								.filter(RecordScript.of(initExpr, "$codes.contains(건물용도코드)"))
 								.project("the_geom,건물관리번호")

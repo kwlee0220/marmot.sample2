@@ -48,7 +48,7 @@ public class FixNetworkDataSet {
 		String updEXpr = String.format("%1$s=id.startsWith('D') ? %1$s.reverse() : %1$s", geomCol);
 		
 		Plan plan;
-		plan = marmot.planBuilder("fix_network_dataset")
+		plan = Plan.builder("fix_network_dataset")
 					.load(INPUT)
 					.update(updEXpr)
 					.store(RESULT, FORCE(gcInfo))

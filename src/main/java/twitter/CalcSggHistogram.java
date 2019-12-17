@@ -46,7 +46,7 @@ public class CalcSggHistogram {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		Plan plan = marmot.planBuilder("calc_emd_histogram")
+		Plan plan = Plan.builder("calc_emd_histogram")
 							.loadSpatialIndexJoin(LEFT_DATASET, RIGHT_DATASET,
 										"left.{id},right.{the_geom,SIG_CD,SIG_KOR_NM}")
 							.aggregateByGroup(Group.ofKeys("SIG_CD")

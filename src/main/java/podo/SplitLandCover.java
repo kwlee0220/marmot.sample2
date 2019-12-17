@@ -59,7 +59,7 @@ public class SplitLandCover {
 		String geomCol = ds.getGeometryColumn();
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder(inputDsId + "_분할")
+		Plan plan = Plan.builder(inputDsId + "_분할")
 							.load(inputDsId, LoadOptions.SPLIT_COUNT(16))
 							.assignUid("uid")
 							.splitGeometry(geomCol)

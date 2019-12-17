@@ -61,7 +61,7 @@ public class SummarizeByHighSchoolShort {
 		
 		System.out.println("done: 아파트 거래 정보 지오코딩, elapsed=" + watch.getElapsedMillisString());
 		
-		plan = marmot.planBuilder("고등학교_주변_거래_집계")
+		plan = Plan.builder("고등학교_주변_거래_집계")
 						.load(TEMP)
 						// 고등학교를 기준으로 그룹핑하여 집계한다.
 						.aggregateByGroup(Group.ofKeys("id").tags(geomCol + ",name"),
@@ -90,7 +90,7 @@ public class SummarizeByHighSchoolShort {
 		GeometryColumnInfo gcInfo = school.getGeometryColumnInfo();
 		String schoolGeomCol = school.getGeometryColumn();
 		
-		return marmot.planBuilder("고등학교_주변_아파트_매매_추출")
+		return Plan.builder("고등학교_주변_아파트_매매_추출")
 					.load(APT_LOC)
 					
 					// 고등학교 주변 1km 내의 아파트 검색.
@@ -122,7 +122,7 @@ public class SummarizeByHighSchoolShort {
 		GeometryColumnInfo gcInfo = school.getGeometryColumnInfo();
 		String schoolGeomCol = school.getGeometryColumn();
 		
-		return marmot.planBuilder("고등학교_주변_아파트_전월세_추출")
+		return Plan.builder("고등학교_주변_아파트_전월세_추출")
 					.load(APT_LOC)
 					
 					// 고등학교 주변 1km 내의 아파트 검색.
@@ -150,7 +150,7 @@ public class SummarizeByHighSchoolShort {
 		DataSet ds = marmot.getDataSet(SCHOOLS);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 	
-		Plan plan = marmot.planBuilder("find_high_school")
+		Plan plan = Plan.builder("find_high_school")
 							.load(SCHOOLS)
 							.filter("type == '고등학교'")
 							.store(HIGH_SCHOOLS, FORCE(gcInfo))

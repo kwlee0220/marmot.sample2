@@ -36,7 +36,7 @@ public class FireStationService {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		String geomCol = ds.getGeometryColumn();
 		
-		plan = marmot.planBuilder("combine")
+		plan = Plan.builder("combine")
 					.load(LAND_USAGE)
 					.filter("lclas_cl=='UQA100'")
 					.spatialJoin(geomCol, POP, "param.{the_geom as the_geom,인구수 as pop}")

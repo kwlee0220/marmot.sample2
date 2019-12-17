@@ -57,7 +57,7 @@ public class FindByEmd {
 		// 프로그램 수행 이전에 기존 OUTPUT_LAYER을 제거시킨다.
 		marmot.deleteDataSet(RESULT);
 		
-		Plan plan = marmot.planBuilder("find_emd")
+		Plan plan = Plan.builder("find_emd")
 							// tweet 레이어를 읽어, 서초동 행정 영역과 겹치는 트위 레코드를 검색한다.
 							.query(TWEETS, border)
 							.project("the_geom,id")
@@ -77,7 +77,7 @@ public class FindByEmd {
 	private static Geometry getBorder(MarmotRuntime marmot) throws Exception {
 		// '읍면동 행정구역' 레이어에서 강남구 행정 영역 정보를 검색하는 프로그램을 구성한다.
 		//
-		Plan plan = marmot.planBuilder("find_emd")
+		Plan plan = Plan.builder("find_emd")
 								// 읍면동 행정구역 레이어를 읽는다.
 								.load(EMD)
 								// 강남구 레코드를 검색한다.

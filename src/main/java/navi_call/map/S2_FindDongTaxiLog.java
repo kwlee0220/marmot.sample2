@@ -53,7 +53,7 @@ public class S2_FindDongTaxiLog {
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		
 		Plan plan;
-		plan = marmot.planBuilder("동내_로그_추출")
+		plan = Plan.builder("동내_로그_추출")
 					.load(INPUT)
 					.filterSpatially(geomCol, INTERSECTS, guBoundary)
 					.store(RESULT, FORCE(gcInfo))
@@ -69,7 +69,7 @@ public class S2_FindDongTaxiLog {
 	private static Geometry getDongBoundary(MarmotRuntime marmot, String dongName)
 		throws Exception {
 		String predicate = String.format("emd_kor_nm == '%s'", dongName);
-		Plan plan = marmot.planBuilder("filter")
+		Plan plan = Plan.builder("filter")
 							.load(Globals.EMD)
 							.filter(predicate)
 							.project("the_geom")

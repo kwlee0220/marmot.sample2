@@ -34,7 +34,7 @@ public class Test {
 		DataSet result;
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		
-		plan = marmot.planBuilder("xx")
+		plan = Plan.builder("xx")
 					.load("tmp/hcode")
 					.update("the_geom = ST_GeomFromEnvelope(ST_AsEnvelope(the_geom))")
 					.store("tmp/hcode2", FORCE(gcInfo))
@@ -42,7 +42,7 @@ public class Test {
 		marmot.execute(plan);
 		result = marmot.getDataSet("tmp/hcode2");
 		
-		plan = marmot.planBuilder("yy")
+		plan = Plan.builder("yy")
 					.load("tmp/cada")
 					.update("the_geom = ST_GeomFromEnvelope(ST_AsEnvelope(the_geom))")
 					.store("tmp/cada2", FORCE(gcInfo))
@@ -51,7 +51,7 @@ public class Test {
 		result = marmot.getDataSet("tmp/cada2");
 
 		GeometryColumnInfo gcInfo2 = new GeometryColumnInfo("the_geom", "EPSG:4326");
-		plan = marmot.planBuilder("find_closest_point_on_link")
+		plan = Plan.builder("find_closest_point_on_link")
 					.load("tmp/cada2")
 					.spatialJoin("the_geom", "tmp/hcode2",
 								"the_geom,pnu,param.the_geom as the_geom2, param.hcode")

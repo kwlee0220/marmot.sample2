@@ -79,13 +79,13 @@ public class Y2T_1_2 {
 		String geomCol = input.getGeometryColumn();
 		
 		// 전국 시도 행정구역 데이터에서 서울특별시 영역만을 추출한다.
-		plan = marmot.planBuilder("get_seoul")
+		plan = Plan.builder("get_seoul")
 					.load(SID)
 					.filter("ctprvn_cd == '11'")
 					.build();
 		Geometry seoul = marmot.executeLocally(plan).toList().get(0).getGeometry(geomCol);
 
-		plan = marmot.planBuilder("crop")
+		plan = Plan.builder("crop")
 					.load(BUS_OT_DT)
 					// 서울시 영역만 추출한다.
 					.filterSpatially(geomCol, INTERSECTS, seoul)
@@ -107,7 +107,7 @@ public class Y2T_1_2 {
 			
 			StoreDataSetOptions opts = (buffereds == null)	// first iteration?
 									? FORCE(gcInfo) : APPEND;
-			plan = marmot.planBuilder("spread")
+			plan = Plan.builder("spread")
 						.load(TEMP_BUS_SEOUL)
 						.buffer(geomCol, radius)
 						.expand("area:double", expr)
@@ -142,7 +142,7 @@ public class Y2T_1_2 {
 												return Stream.of(ot, dt);
 											})
 											.collect(Collectors.toList());
-		plan = marmot.planBuilder("analysis")
+		plan = Plan.builder("analysis")
 					.load(COLLECT)
 					
 //					.buildSpatialHistogram(geomCol, MULTI_RINGS, valueColNames)
@@ -153,7 +153,7 @@ public class Y2T_1_2 {
 					.build();
 		marmot.execute(plan);
 		
-		plan = marmot.planBuilder("analysis")
+		plan = Plan.builder("analysis")
 					.load(TEMP_JOINED)
 					.aggregateByGroup(Group.ofKeys("tot_oa_cd").withTags("param_geom"), aggrFuncList)
 					.project("param_geom as the_geom, *-{param_geom}")

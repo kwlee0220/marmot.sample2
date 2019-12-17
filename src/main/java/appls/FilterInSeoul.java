@@ -46,7 +46,7 @@ public class FilterInSeoul {
 		Geometry seoul = getSeoulBoundary(marmot);
 		getSeoulCadastral(marmot, seoul, CADASTRAL_SEOUL);
 		
-		plan = marmot.planBuilder("tag_geom")
+		plan = Plan.builder("tag_geom")
 					.load(LAND_USAGE)
 					.filter("법정동코드.startsWith('11')")
 					.hashJoin("고유번호", CADASTRAL_SEOUL, "pnu", "*,param.the_geom",
@@ -67,7 +67,7 @@ public class FilterInSeoul {
 		Plan plan;
 		
 		DataSet sid = marmot.getDataSet(SID);
-		plan = marmot.planBuilder("get_seoul")
+		plan = Plan.builder("get_seoul")
 					.load(SID)
 					.filter("ctprvn_cd == '11'")
 					.build();
@@ -81,7 +81,7 @@ public class FilterInSeoul {
 		DataSet taxi = marmot.getDataSet(CADASTRAL);
 		GeometryColumnInfo gcInfo = taxi.getGeometryColumnInfo();
 		
-		plan = marmot.planBuilder("grid_taxi_logs")
+		plan = Plan.builder("grid_taxi_logs")
 					// 택시 로그를  읽는다.
 					.query(CADASTRAL, seoul)
 					// 승하차 로그만 선택한다.
