@@ -1,6 +1,6 @@
 package yunsei;
 
-import static marmot.optor.StoreDataSetOptions.EMPTY;
+import static marmot.optor.StoreDataSetOptions.DEFAULT;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
@@ -202,7 +202,7 @@ public class Y2T_1 {
 							.build();
 			}
 			else {
-				plan = pbldr.store(outputDs, EMPTY)
+				plan = pbldr.store(outputDs, DEFAULT)
 							.build();
 			}
 			marmot.execute(plan);
