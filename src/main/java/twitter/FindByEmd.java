@@ -12,6 +12,7 @@ import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
+import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -58,12 +59,13 @@ public class FindByEmd {
 		marmot.deleteDataSet(RESULT);
 		
 		Plan plan = Plan.builder("find_emd")
-							// tweet 레이어를 읽어, 서초동 행정 영역과 겹치는 트위 레코드를 검색한다.
-							.query(TWEETS, border)
-							.project("the_geom,id")
-							// 검색된 레코드를 'OUTPUT_LAYER' 레이어에 저장시킨다.
-							.store(RESULT, FORCE(gcInfo))
-							.build();
+						// tweet 레이어를 읽어, 서초동 행정 영역과 겹치는 트위 레코드를 검색한다.
+						.query(TWEETS, border.getEnvelopeInternal())
+						.filterSpatially(gcInfo.name(), SpatialRelation.INTERSECTS, border)
+						.project("the_geom,id")
+						// 검색된 레코드를 'OUTPUT_LAYER' 레이어에 저장시킨다.
+						.store(RESULT, FORCE(gcInfo))
+						.build();
 		marmot.execute(plan);
 		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
@@ -78,13 +80,13 @@ public class FindByEmd {
 		// '읍면동 행정구역' 레이어에서 강남구 행정 영역 정보를 검색하는 프로그램을 구성한다.
 		//
 		Plan plan = Plan.builder("find_emd")
-								// 읍면동 행정구역 레이어를 읽는다.
-								.load(EMD)
-								// 강남구 레코드를 검색한다.
-								.filter("emd_kor_nm=='서초동'")
-								// 강남구 행정 영역 컬럼만 뽑는다.
-								.project("the_geom")
-								.build();
+						// 읍면동 행정구역 레이어를 읽는다.
+						.load(EMD)
+						// 강남구 레코드를 검색한다.
+						.filter("emd_kor_nm=='서초동'")
+						// 강남구 행정 영역 컬럼만 뽑는다.
+						.project("the_geom")
+						.build();
 		// 프로그램 수행으로 생성된 임시 레이어를 읽어 강남구 영역을 읽는다.
 		return marmot.executeLocally(plan)
 						.fstream()

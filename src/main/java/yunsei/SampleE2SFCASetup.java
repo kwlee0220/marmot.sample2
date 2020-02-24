@@ -13,6 +13,7 @@ import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
+import marmot.optor.geo.SpatialRelation;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -40,7 +41,8 @@ public class SampleE2SFCASetup {
 		DataSet flowPop = marmot.getDataSet(FLOW_POP);
 		GeometryColumnInfo gcInfo = flowPop.getGeometryColumnInfo();
 		plan = Plan.builder("강남구 영역 유동인구 정보 추출")
-						.query(FLOW_POP, gangnaum)
+						.query(FLOW_POP, gangnaum.getEnvelopeInternal())
+						.filterSpatially(gcInfo.name(), SpatialRelation.INTERSECTS, gangnaum)
 						.expand("year:int", "year = std_ym.substring(0,4)")
 						.aggregateByGroup(Group.ofKeys("block_cd,year").tags("the_geom"),
 											AVG("avg_08tmst").as("avg_08tmst"),

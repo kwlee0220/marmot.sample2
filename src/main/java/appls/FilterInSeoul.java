@@ -13,6 +13,7 @@ import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.JoinOptions;
+import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -83,7 +84,8 @@ public class FilterInSeoul {
 		
 		plan = Plan.builder("grid_taxi_logs")
 					// 택시 로그를  읽는다.
-					.query(CADASTRAL, seoul)
+					.query(CADASTRAL, seoul.getEnvelopeInternal())
+					.filterSpatially(gcInfo.name(), SpatialRelation.INTERSECTS, seoul)
 					// 승하차 로그만 선택한다.
 					.filter("pnu.startsWith('11')")
 					.store(output, FORCE(gcInfo))
