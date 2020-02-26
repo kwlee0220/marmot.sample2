@@ -81,7 +81,7 @@ public class Y2T_2 {
 		marmot.execute(plan);
 		result = marmot.getDataSet(TEMP_TAXI);
 		System.out.println("done: 택시 승하차 로그 선택, elapsed=" + watch.getElapsedMillisString());
-		result.cluster();
+		result.createSpatialIndex();
 		System.out.println("done: 승하차 로그 클러스터링, elapsed=" + watch.getElapsedMillisString());
 		
 		String expr = "if ( status == null ) { supply = 0; demand = 0; }" 

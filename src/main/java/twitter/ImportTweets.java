@@ -60,7 +60,7 @@ public class ImportTweets {
 		// MarmotServer에 생성한 프로그램을 전송하여 수행시킨다.
 		marmot.execute(plan);
 		DataSet result = marmot.getDataSet(RESULT);
-		result.cluster();
+		result.createSpatialIndex();
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

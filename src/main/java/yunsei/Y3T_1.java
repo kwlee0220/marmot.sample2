@@ -82,7 +82,7 @@ public class Y3T_1 {
 					.build();
 		marmot.execute(plan);
 		result = marmot.getDataSet(TEMP_POP);
-		result.cluster();
+		result.createSpatialIndex();
 		System.out.println("elapsed: " + watch.getElapsedMillisString());
 		
 		plan = Plan.builder("핫 스팟 분석")

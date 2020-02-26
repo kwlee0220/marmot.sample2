@@ -63,7 +63,7 @@ public class Test2017_0 {
 								.build();
 		marmot.execute(plan);
 		DataSet result = marmot.getDataSet(ADDR_BLD_UTILS);
-		result.cluster();
+		result.createSpatialIndex();
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

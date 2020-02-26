@@ -87,7 +87,7 @@ public class Process {
 		StopWatch watch = StopWatch.start();
 		System.out.printf("토지피복도 인덱싱: %s...", dsId);
 		DataSet ds = marmot.getDataSet(dsId);
-		ds.cluster();
+		ds.createSpatialIndex();
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 	

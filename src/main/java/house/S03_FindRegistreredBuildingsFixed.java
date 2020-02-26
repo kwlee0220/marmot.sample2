@@ -53,7 +53,7 @@ public class S03_FindRegistreredBuildingsFixed {
 		marmot.execute(plan);
 		
 		DataSet ds = marmot.getDataSet(result);
-		ds.cluster();
+		ds.createSpatialIndex();
 		elapsed.stop();
 		
 		System.out.printf("총괄표제부 보유 건물 추출 완료, count=%d, elapsed=%s%n",

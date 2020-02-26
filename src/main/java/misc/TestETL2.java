@@ -69,6 +69,6 @@ public class TestETL2 {
 		marmot.execute(plan);
 		
 		DataSet result = marmot.getDataSet(PARAM);
-		result.cluster();
+		result.createSpatialIndex();
 	}
 }
